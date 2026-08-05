@@ -84,6 +84,8 @@ function drawLayer(layer, yoffset)
 	local wScale = tempWorldScale or renderScale or worldScale or 1
 	local autoScroll = -scrollFrequency * time / 16 --TODO: inaccurate with water
 	local shakeX, shakeY = cameraShakeX or 0, cameraShakeY or 0
+	local screenLeft = renderLeft - shakeX or screen.left -- really weird hack, change this asap
+	local screenTop = renderTop - shakeY or screen.top
 
 	--[[
 	local xScale = layer.scaleWobbleX and math.sin(time) * layer.scaleWobbleX / wScale or 0
@@ -92,6 +94,9 @@ function drawLayer(layer, yoffset)
 	local screenTop = renderTop - shakeY or screen.top
 	]]
 	--
+	if layer.water then
+		yoffset = -(objects.waterLevel or 0) * physicsToWorld / relativeScale
+	end
 
 	if currentGameMode == updateGame then
 		xScale = layer.scaleWobbleX and math.sin(time) * layer.scaleWobbleX * wScale or 0
@@ -99,14 +104,6 @@ function drawLayer(layer, yoffset)
 	else
 		xScale = layer.scaleWobbleX and math.sin(time) * layer.scaleWobbleX * wScale or 0
 		yScale = layer.scaleWobbleY and math.sin(time) * layer.scaleWobbleY * wScale or 0
-	end
-
-	local screenLeft = renderLeft - shakeX or screen.left -- really weird hack, change this asap
-	local screenTop = renderTop - shakeY or screen.top
-
-
-	if layer.water then
-		yoffset = -(objects.waterLevel or 0) * physicsToWorld / relativeScale
 	end
 	
 	if w > 0 and wScale > .02 then --don't draw so many if the scale is too low

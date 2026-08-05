@@ -318,18 +318,18 @@ function drawSlingScopeNative(s_vx, s_vy, vertical_force)
 	local amount = 16
 
 	local offset = g_sling_scope_animation % 1
-	
+
 	vertical_force = vertical_force or 0
 
 	s_vy = s_vy - worldgravity.y / physicsToWorld * spacing / 2
-	s_vy = s_vy + worldgravity.y / physicsToWorld * spacing * (offset)
-	
+	s_vy = s_vy + worldgravity.y / physicsToWorld * spacing * offset
+
 	local verticalForce = (vertical_force / selectedBird.mass) / physicsToWorld
 	if vertical_force ~= 0 then
 		s_vy = s_vy - verticalForce * spacing / 2
-		s_vy = s_vy + verticalForce * spacing * (offset)
+		s_vy = s_vy + verticalForce * spacing * offset
 	end
-	
+
 	lsx = lsx + s_vx * spacing * offset
 	lsy = lsy + s_vy * spacing * offset
 

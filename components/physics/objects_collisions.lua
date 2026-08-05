@@ -13,6 +13,15 @@ function destroyJoint(name)
 	local obj = objects.joints[name]
 
 	if obj and obj.joint and not obj.joint:isDestroyed() then
+		local joint = obj.joint
+		if joint.type == 5 then
+			if joint.obj1 then
+				joint.obj1:release()
+			end
+			if joint.obj2 then
+				joint.obj2:release()
+			end
+		end
 		obj.joint:destroy()
 	end
 	

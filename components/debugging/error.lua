@@ -94,6 +94,10 @@ function love.errorhandler(msg)
 
 	local fullErrorText = p
 
+	pcall(function()
+		love.filesystem.write("error_log.txt", os.date("%Y-%m-%d %H:%M:%S") .. "\n\n" .. fullErrorText)
+	end)
+
 	autoScale = 600
 
 	local function draw(dt)

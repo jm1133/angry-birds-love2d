@@ -92,7 +92,7 @@ function updatePhysics(dt)
 	local rollingVolumes = {}
 	local cx, cy = cursorPhysics.x, cursorPhysics.y
 	for _, obj in pairs(objects.world) do
-		if obj.body and not obj.body:isDestroyed() then
+		if obj.body and not obj.body:isDestroyed() and not obj.physicsDisabled then
 			obj.x, obj.y = obj.body:getPosition()
 			
 			local bDef = getObjectDefinition(obj.name)
@@ -245,7 +245,7 @@ function WorldSolve(step)
 	for name, object in pairs(objects.world) do
 		local body = object.body
 		
-		if body and not body:isDestroyed() and body:getType() == "dynamic" then
+		if body and not body:isDestroyed() and body:getType() == "dynamic" and not object.physicsDisabled then
 			local vx, vy = object.xVel, object.yVel
 			
 			--- calculate speed then limit it.
