@@ -1,7 +1,8 @@
 --draw bg, fg, and game
 
 local drawSprites --old seasons versions define drawSprites
-local trajectory
+local trajectoryActive = {}
+local trajectoryInactive = {}
 
 
 themeSpriteObjects = {}
@@ -239,12 +240,13 @@ function drawGameNative()
 	local screenLeft, screenTop = getScreenTopLeft()
 	local scale = renderScale or worldScale
 	local trSprites = {}
+	local frame = 1
 
 	setRenderState(-screenLeft, -screenTop, scale, scale, 0, 0, 1)
 	for i = 1, 3 do trSprites[i - 1] = "TRAIL_WHITE_"..i end
 	trSprites[#trSprites + 1] = "PARTICLE_SLINGDOT"
 	--[[
-	 for _,tr in ipairs(trajectory) do
+	 for _,tr in ipairs(trajectoryActive) do
 	 	for _,v in ipairs(tr) do
 	 		for i,vv in ipairs(v) do
 	 			res.drawSprite(vv.s or trSprites[(i - 1) % 3], vv.x, vv.y)
@@ -252,12 +254,25 @@ function drawGameNative()
 	 	end
 	 end
 	--]]
-	for _, tr in ipairs(trajectory) do
+	for _, tr in ipairs(trajectoryActive) do
 		for _, v in ipairs(tr) do
 			if v then
 				for i, vv in ipairs(v) do
 					if vv and vv.x and vv.y then
-						local frame = ((i + math.floor(time * 8)) % 3)
+						if useFancyTrails == true then
+							frame = ((i + math.floor(time * 8)) % 3)
+						end
+						res.drawSprite(vv.s or trSprites[frame], vv.x, vv.y)
+					end
+				end
+			end
+		end
+	end
+	for _, tr in ipairs(trajectoryInactive) do
+		for _, v in ipairs(tr) do
+			if v then
+				for i, vv in ipairs(v) do
+					if vv and vv.x and vv.y then
 						res.drawSprite(vv.s or trSprites[frame], vv.x, vv.y)
 					end
 				end
@@ -395,12 +410,12 @@ end
 
 --[[
  function addToTrajectory(index, x, y)
- 	table.insert(trajectory[#trajectory][index], {x = x, y = y})
+ 	table.insert(trajectoryActive[#trajectoryActive][index], {x = x, y = y})
  end
 ]]--
 
 function addToTrajectory(index, x, y)
-	local tr = trajectory[#trajectory][index]
+	local tr = trajectoryActive[#trajectoryActive][index]
 
 	table.insert(tr, {
 		x = x,
@@ -416,7 +431,7 @@ end
 
 function updateTrajectoryAnimation(dt)
 
-	for _, trails in ipairs(trajectory) do
+	for _, trails in ipairs(trajectoryActive) do
 		for _, tr in ipairs(trails) do
 
 			for _, dot in ipairs(tr) do
@@ -431,12 +446,12 @@ function updateTrajectoryAnimation(dt)
 end
 
 --[[
- function addPuffToTrajectory(index, x, y)
- 	table.insert(trajectory[#trajectory][index], {x = x, y = y, s = "BIRD_SPECIAL"})
+ function addPuffTotrajectory(index, x, y)
+ 	table.insert(trajectoryActive[#trajectoryActive][index], {x = x, y = y, s = "BIRD_SPECIAL"})
  end
 ]]--
 function addPuffToTrajectory(index, x, y)
-	local tr = trajectory[#trajectory][index]
+	local tr = trajectoryActive[#trajectoryActive][index]
 
 	table.insert(tr, {
 		x = x,
@@ -450,12 +465,22 @@ function addPuffToTrajectory(index, x, y)
 end
 
 function startNewTrajectory()
-	table.insert(trajectory, {{}, {}, {}})
-	if #trajectory > 2 then
-		table.remove(trajectory, 1)
+	for i = #trajectoryActive, 1, -1 do
+		table.insert(trajectoryInactive, trajectoryActive[i])
+		table.remove(trajectoryActive, i)
+	end
+
+	table.insert(trajectoryActive, { {}, {}, {} })
+
+	if #trajectoryActive > 2 then
+		table.remove(trajectoryActive, 1)
+	end
+	if #trajectoryInactive > 2 then
+		table.remove(trajectoryInactive, 1)
 	end
 end
 
 function resetTrajectory()
-	trajectory = {{{}, {}, {}}}
+	trajectoryActive = { { {}, {}, {} } }
+	trajectoryInactive = { { {}, {}, {} } }
 end
