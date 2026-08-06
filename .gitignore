@@ -12,7 +12,6 @@ data
 .luarc.json
 .run.ps1
 Angry Birds.gdf
-AngryBirds.exe
 AngryBirds.py
 angry-birds-love2d.code-workspace
 autoenc.ini

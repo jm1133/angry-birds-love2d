@@ -240,7 +240,6 @@ function drawGameNative()
 	local screenLeft, screenTop = getScreenTopLeft()
 	local scale = renderScale or worldScale
 	local trSprites = {}
-	local frame = 1
 
 	setRenderState(-screenLeft, -screenTop, scale, scale, 0, 0, 1)
 	for i = 1, 3 do trSprites[i - 1] = "TRAIL_WHITE_"..i end
@@ -260,9 +259,12 @@ function drawGameNative()
 				for i, vv in ipairs(v) do
 					if vv and vv.x and vv.y then
 						if useFancyTrails == true then
-							frame = ((i + math.floor(time * 8)) % 3)
+							res.drawSprite(trSprites[((i + math.floor(time * 8)) % 3)]
+							, vv.x, vv.y)
+						else
+							res.drawSprite(trSprites[1], vv.x, vv.y)
 						end
-						res.drawSprite(vv.s or trSprites[frame], vv.x, vv.y)
+						
 					end
 				end
 			end
@@ -273,7 +275,7 @@ function drawGameNative()
 			if v then
 				for i, vv in ipairs(v) do
 					if vv and vv.x and vv.y then
-						res.drawSprite(vv.s or trSprites[frame], vv.x, vv.y)
+						res.drawSprite(trSprites[1], vv.x, vv.y)
 					end
 				end
 			end
