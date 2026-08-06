@@ -2,14 +2,13 @@
 
 An accurate *work-in-progress* port of Angry Birds' proprietary engine to LÖVE (the free game framework that uses Lua). This is not a game version nor a decompilation, but an engine reimplementation/port. Currently, AB Classic version 1.6.3.1 for PC is bundled by default, but many other versions (Classic, Seasons, and their platform variants) are supported.
 
-To download, first make sure you have [LÖVE](https://love2d.org/) installed, as it is required to run this project. Head to [the latest release](https://github.com/romoney5/angry-birds-love2d/releases/latest) and get `angrybirds_love2d.love`. You can simply double-click the .love file to play.
+To download, first make sure you have the [LÖVE2D Engine](https://nightly.link/love2d/love/workflows/main/main) extracted inside of the folder. (it may come as a zip inside of a zip - you need the one with multiple files and dlls!)
 
-You can also test from the source code without a .love file. This is more preferred as the last release is over a year old. Open the green Code dropdown, and download and extract the .zip file. On Windows, go to C:\Program Files\LOVE\ and copy lovec.exe (or love.exe) to the unzipped folder. Finally, drag and drop main.lua to the LÖVE executable.
+Then,you download the source code of this project and put all of the files inside of your game folder.
+
+To install Angry Birds into it,just copy the DATA folder into the folder you have extracted LÖVE2D and this angry birds engine into.
 
 If you are on Linux, it's as easy as downloading a LÖVE Flatpak, navigating to the project folder, and running `love .` in a terminal.
-
-> [!Note]
-> Angry Birds LÖVE2D is currently not intended to be used for modding; only for people curious about the engine and its inner workings. It has many discrepancies with the original engine and it's better to just save yourself the headache.
 
 ## Command line arguments
 - `--datapath`/`-dp` overrides the default path to `data/` and uses a new save data subfolder. Useful for playing mods or from app files. Can also be used to boot from .zip/.ipa/.apk or other zipped files. Example: `--datapath 2.2.0.apk`
