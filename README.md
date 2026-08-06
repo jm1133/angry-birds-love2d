@@ -1,60 +1,151 @@
 # Angry Birds LÖVE2D
 
-An accurate *work-in-progress* port of Angry Birds' proprietary engine to LÖVE (the free game framework that uses Lua). This is not a game version nor a decompilation, but an engine reimplementation/port. Currently, AB Classic version 1.6.3.1 for PC is bundled by default, but many other versions (Classic, Seasons, and their platform variants) are supported.
+An accurate **work-in-progress** port of Angry Birds' proprietary engine to **LÖVE2D**, the free and open-source game framework that uses Lua.
 
-To download, first make sure you have [LÖVE](https://love2d.org/) installed, as it is required to run this project. Head to [the latest release](https://github.com/romoney5/angry-birds-love2d/releases/latest) and get `angrybirds_love2d.love`. You can simply double-click the .love file to play.
+This project is **not** a decompilation or an official game release. Instead, it is a reimplementation of the original Angry Birds engine.
 
-You can also test from the source code without a .love file. This is more preferred as the last release is over a year old. Open the green Code dropdown, and download and extract the .zip file. On Windows, go to C:\Program Files\LOVE\ and copy lovec.exe (or love.exe) to the unzipped folder. Finally, drag and drop main.lua to the LÖVE executable.
+By default, the engine is bundled with **Angry Birds Classic 1.6.3.1 (PC)**, although many other versions of Angry Birds Classic, Angry Birds Seasons, and their platform variants are supported.
 
-If you are on Linux, it's as easy as downloading a LÖVE Flatpak, navigating to the project folder, and running `love .` in a terminal.
+---
 
-> [!Note]
-> Angry Birds LÖVE2D is currently not intended to be used for modding; only for people curious about the engine and its inner workings. It has many discrepancies with the original engine and it's better to just save yourself the headache.
+# Downloading the Engine
 
-## Command line arguments
-- `--datapath`/`-dp` overrides the default path to `data/` and uses a new save data subfolder. Useful for playing mods or from app files. Can also be used to boot from .zip/.ipa/.apk or other zipped files. Example: `--datapath 2.2.0.apk`
-- `--model`/`-m` overrides the `deviceModel`. Handy for testing for other devices, such as Android or Roku.
-- `--skipintro`/`-si` automatically skips the game's splash screen.
-- `--run`/`+..."` runs a line of Lua code before starting the game. Examples: `--run "releaseBuild = true"` `+"autoScale = 240"`
-- `--deletedata`/`-dd` prompts to delete save data (settings.lua and highscores.lua).
-- `--cheats`/`-c` enables cheats. (Enabled `cheatsEnabled`, overrides options.lua)
-- `--blamelength`/`-bl` sets the length of bytecode tracebacks (a list of previously run instructions shown upon getting an error; very useful for debugging compiled Luas). Set to 0 by default for performance reasons.
-- `--nosave`/`-ns` disables saving any Lua files (e.g. settings and highscores will not save).
+First, download the latest LÖVE2D nightly build and extract it into a folder.
 
-## Keybinds
-Some debug keybinds have been added:
+> **Note:** The download may contain a ZIP file inside another ZIP file. Be sure to extract the one containing the executable, DLLs, and other engine files.
 
-- `Shift+D`/click bottom right corner: Brings up a console that lets you run Lua code on the fly. It also presents a scrollable print log.
-- `Shift+A`: Speeds up the game by 5 times.
-- `Shift+Z`: Toggles a complete pause of the game. Press `A` to step one frame or `Shift+A` to step five frames.
+Next, download the source code for this project and copy all of its contents into the same folder.
 
-## Variables
-Here are some variables that can be changed by the debug console:
+Finally, copy the Angry Birds `DATA` folder into that directory.
 
-- `timeScale`: Defaults to 1, modifies the speed of the game.
-- `audioSpeed`: Defaults to 1, modifies the audio pitch and speed.
-- `accurateAudioSpeed.on`: Defaults to false, controls if the game should try to emulate a forced sample rate for all sound effects.
-- `gravity.x`/`gravity.y`: Defaults to 0 and 20 respectively, controls the level's gravity.
-- `autoScale`: Defaults to 0 (or 720 on Android), scales the display of the game depending on a target screen height. Has no effect if it's zero.
-- `displayScale`: Defaults to 1, scales the whole display of the game. Controlled by `autoScale` if it's not zero.
+## Linux
 
-## Dependencies
-These projects can be added to support more versions:
+On Linux, simply install LÖVE (the Flatpak version is recommended), navigate to the project directory, and run:
 
-The libcrypto library, a part of [OpenSSL](https://github.com/openssl/openssl), is used to decrypt encrypted Lua files.
-- You must get libcrypto-3.dll to use it: https://slproweb.com/products/Win32OpenSSL.html
+```bash
+love .
+```
 
-[LZMA](https://www.7-zip.org/sdk.html) is used to extract Lua files compressed with LZMA.
-- You must get lzma.exe (found in bin/x64/lzma.exe) to use it.
+---
 
-## Acknowledgments
-These projects are included within the engine:
+# Running the Game
 
-[FiOne](https://github.com/Rerumu/FiOne) (with some edits) is used to run compiled Lua files.
-- May be replaced soon as it's licensed under the GPL and uses a lot of memory; the garbage collector runs often and slows the game down
+You can start the game in either of the following ways:
 
-[love-webp](https://github.com/ImagicTheCat/love-webp) is used to read WebP images.
+- Drag `main.lua` onto `love.exe`.
+- Launch `AngryBirds.exe`, a small launcher included with the project that performs the same task.
 
-[lua-bit-numberlua](https://github.com/davidm/lua-bit-numberlua) is used as a replacement for LuaJIT's bit library if it's not present.
+---
 
-This port is not affiliated with or endorsed by Rovio Entertainment Corporation.
+# Building the Game
+
+To package the project as a standalone executable, first create a `.love` archive and then follow the official LÖVE distribution guide:
+
+https://love2d.org/wiki/Game_Distribution
+
+---
+
+# Command-Line Arguments
+
+The engine supports the following optional command-line arguments:
+
+| Argument | Description |
+|----------|-------------|
+| `--datapath`, `-dp` | Overrides the default `DATA` directory and uses a separate save-data folder. Useful for mods or loading directly from `.zip`, `.ipa`, or `.apk` files. Example: `--datapath 2.2.0.apk` |
+| `--model`, `-m` | Overrides the detected device model. Useful for testing Android, Roku, and other platforms. |
+| `--skipintro`, `-si` | Automatically skips the splash screen during startup. |
+| `--run`, `+` | Executes a line of Lua code before the game starts. Examples: `--run "releaseBuild = true"` or `+"autoScale = 240"` |
+| `--deletedata`, `-dd` | Prompts to delete save data (`settings.lua` and `highscores.lua`). |
+| `--cheats`, `-c` | Enables cheat mode by forcing `cheatsEnabled`, overriding `options.lua`. |
+| `--blamelength`, `-bl` | Sets the length of bytecode tracebacks. Useful when debugging compiled Lua files. Defaults to `0` for better performance. |
+| `--nosave`, `-ns` | Prevents the engine from saving Lua data files such as `settings.lua` and `highscores.lua`. |
+
+---
+
+# Debug Controls
+
+The engine includes several built-in debugging shortcuts.
+
+| Shortcut | Action |
+|----------|--------|
+| **Shift + D** or click the bottom-right corner | Opens the debug console. It allows Lua code to be executed at runtime and displays a scrollable log of all `print()` output. |
+| **Shift + A** | Runs the game at **5×** speed. |
+| **Shift + Z** | Completely pauses the game. Press **A** to advance one frame or **Shift + A** to advance five frames. |
+
+---
+
+# Runtime Variables
+
+The following variables can be modified through the debug console.
+
+| Variable | Description |
+|----------|-------------|
+| `timeScale` | Controls the overall game speed. Default: `1`. |
+| `audioSpeed` | Controls audio pitch and playback speed. Default: `1`. |
+| `accurateAudioSpeed.on` | Attempts to emulate a forced sample rate for sound effects. Default: `false`. |
+| `gravity.x` | Horizontal gravity. Default: `0`. |
+| `gravity.y` | Vertical gravity. Default: `20`. |
+| `autoScale` | Automatically scales the display to a target screen height. Default: `0` (`720` on Android). |
+| `displayScale` | Scales the entire display. Automatically controlled by `autoScale` when enabled. Default: `1`. |
+
+---
+
+# Optional Dependencies
+
+The following external tools enable support for additional Angry Birds versions.
+
+## OpenSSL
+
+The `libcrypto` library (part of OpenSSL) is used to decrypt encrypted Lua files.
+
+Download `libcrypto-3.dll` from:
+
+https://slproweb.com/products/Win32OpenSSL.html
+
+## LZMA SDK
+
+The LZMA SDK is used to extract Lua files compressed using the LZMA format.
+
+Download the SDK from:
+
+https://www.7-zip.org/sdk.html
+
+The required executable is:
+
+```text
+bin/x64/lzma.exe
+```
+
+---
+
+# Included Libraries
+
+The following open-source projects are included with the engine.
+
+## FiOne
+
+https://github.com/Rerumu/FiOne
+
+Used to execute compiled Lua bytecode (with several project-specific modifications).
+
+> This library may eventually be replaced, as it is licensed under the GPL and has relatively high memory usage, causing the garbage collector to run more frequently.
+
+## love-webp
+
+https://github.com/ImagicTheCat/love-webp
+
+Provides support for loading WebP images.
+
+## lua-bit-numberlua
+
+https://github.com/davidm/lua-bit-numberlua
+
+Acts as a replacement for LuaJIT's `bit` library when LuaJIT is unavailable.
+
+---
+
+# Disclaimer
+
+This project is an independent reimplementation of the Angry Birds engine.
+
+It is **not** affiliated with, endorsed by, or sponsored by Rovio Entertainment Corporation.
