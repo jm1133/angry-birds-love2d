@@ -26,5 +26,3 @@ function love.conf(t)
     
 --     t.version = "11.5" --11.5 and 12.0 are supported
 end
-
-useFancyTrails = true
