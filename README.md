@@ -30,10 +30,15 @@ love .
 
 # Running the Game
 
-You can start the game in either of the following ways:
+You can start the game in any of the following ways:
 
+### Windows
 - Drag `main.lua` onto `love.exe`.
 - Launch `AngryBirds.exe`, a small launcher included with the project that performs the same task.
+### Linux
+- Run the command: `love .` in the project's directiory in the terminal
+- Launch `AngryBirds.linux`, a small launcher included with the project that performs the same task
+> **Note:** This linux file needs to be made executable with then command: `chmod +x AngryBirds.linux` and ran with the command: `./AngryBirds.linux` in the project's directiory in the terminal
 
 ---
 
