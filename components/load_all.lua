@@ -62,6 +62,7 @@ runLuaFile(compsPath.."/iap.lua")							--in app purchases functions
 runLuaFile(compsPath.."/game_loop.lua")						--main game loop, calls update
 runLuaFile(compsPath .. "/gamepad.lua") 					--controller related functions
 runLuaFile(compsPath .. "/task.lua") 						--library for task.spawn(), task.update() and task.wait() (waiting)
+runLuaFile(compsPath .. "/math.lua") 						--lua's math library
 
 --dummy functions
 runLuaFile(compsPath.."/blanks/classic.lua")				--blank functions for 1.6.3.1
