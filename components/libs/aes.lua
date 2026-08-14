@@ -1,12 +1,37 @@
---magic
+-- magic
 
---not even ffi is present?
+-- not even ffi is present?
 if not jit then return end
 
-_, libcrypto = pcall(ffi.load, "libcrypto")
+local ffi = require("ffi")
 
---doesn't have a dll for libcrypto
-if not libcrypto then return end
+local libcrypto
+
+if love.system.getOS() == "Android" then
+    -- Android version bundled with the engine.
+    --
+    -- This must be an actual filesystem path, not merely
+    -- "components/libs/LibCryptoAndroid.so" in the LÖVE filesystem.
+    local path = "components/libs/LibCryptoAndroid.so"
+
+    local ok, lib = pcall(ffi.load, path)
+
+    if ok then
+        libcrypto = lib
+    else
+        print("AES: failed to load Android libcrypto: " .. tostring(lib))
+        return
+    end
+else
+    -- Windows / other desktop platforms
+    local ok, lib = pcall(ffi.load, "libcrypto")
+
+    if ok then
+        libcrypto = lib
+    else
+        return
+    end
+end
 
 AES = {}
 
