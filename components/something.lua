@@ -282,7 +282,7 @@ local dance = 0
 local function updateCode()
 	local so = something
 
-	local padding = math.min(200, math.min(screenWidth, screenHeight) / 4)
+	local padding = _G._G.math.min(200, _G._G.math.min(screenWidth, screenHeight) / 4)
 	local w, h = screenWidth - padding, screenHeight - padding
 	local x, y = screenWidth*.5 - w*.5, screenHeight*.5 - h*.5
 	drawRect2(10 / 255, 10 / 255, 10 / 255, .3, x + 10, y + 10, w, h, 16)
@@ -350,7 +350,7 @@ function updateSomething(dt)
 	cameraShakeX, cameraShakeY = 0, 0
 
 	-- res.drawString("", "DT "..tostring(dt), 50, 50)
-	local dance = math.abs(math.cos(so.time * (123 / 20))) * 100
+	local dance = _G._G.math.abs(_G._G.math.cos(so.time * (123 / 20))) * 100
 
 	screen.top = -400
 	screen.left = screen.left + dt * 120
@@ -367,7 +367,7 @@ function updateSomething(dt)
 		return
 	end
 
-	local padding = math.min(200, math.min(screenWidth, screenHeight) / 4)
+	local padding = _G._G.math.min(200, _G._G.math.min(screenWidth, screenHeight) / 4)
 	local w, h = screenWidth - padding,screenHeight - padding
 	local x, y = screenWidth*.5 - w*.5,screenHeight*.5 - h*.5
 	drawRect2(10 / 255, 10 / 255, 10 / 255, .3, x + 10, y + 10, w, h, 16)
@@ -468,11 +468,11 @@ function updateSomething(dt)
 		local attach = so.cmenu.attach
 		local width, height = 0, 0
 		
-		so.cmenu.anim = math.min(math.max(so.cmenu.anim + (attach and dt or -dt * 2), 0), 1 / 4)
+		so.cmenu.anim = _G._G.math.min(_G._G.math.max(so.cmenu.anim + (attach and dt or -dt * 2), 0), 1 / 4)
 		
 		for i, v in ipairs(so.cmenu.items) do
 			if v then
-				width = math.max(width, res.getStringWidth(v.text) + 16 + 16)
+				width = _G._G.math.max(width, res.getStringWidth(v.text) + 16 + 16)
 				height = height + 18
 			end
 			height = height + 18
@@ -482,7 +482,7 @@ function updateSomething(dt)
 		
 		local scale = ease.outCubic(so.cmenu.anim / (1 / 4), .7, 1)
 		so.cmenu.w, so.cmenu.h = width, height
-		so.cmenu.y = math.min(so.cmenu.y, screenHeight - height * scale)
+		so.cmenu.y = _G._G.math.min(so.cmenu.y, screenHeight - height * scale)
 		
 		love.graphics.push()
 		love.graphics.translate(so.cmenu.x, so.cmenu.y)
@@ -525,7 +525,7 @@ function updateSomething(dt)
 		love.graphics.pop()
 	end
 
-	drawDebugText(so.path or "Files", screenWidth * .5, math.min(padding / 2, 100), "HCENTER", "FONT_MENU", w)
+	drawDebugText(so.path or "Files", screenWidth * .5, _G._G.math.min(padding / 2, 100), "HCENTER", "FONT_MENU", w)
 	if currentGameMode and currentGameMode == updateSomething then
 		drawDebugButton("BUTTON_ARROW_LEFT", padding / 3, padding / 3, nil, nil, 1, function()
 			res.stopAudio("somethingTheme")

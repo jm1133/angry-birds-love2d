@@ -614,8 +614,8 @@ local function pvrtcDecompress(pCompressedData, pDecompressedData, width, height
 	local pOutData = pDecompressedData;
 
 	-- Calculate number of words
-	local i32NumXWords = math.floor(width / wordWidth);
-	local i32NumYWords = math.floor(height / wordHeight);
+	local i32NumXWords = _G._G.math.floor(width / wordWidth);
+	local i32NumYWords = _G._G.math.floor(height / wordHeight);
 
 	-- Structs used for decompression
 	local indices = {P = {}, Q = {}, R = {}, S = {}};
@@ -681,8 +681,8 @@ function PVRTDecompressPVRTC(pCompressedData, Do2bitMode, XDim, YDim, pResultIma
 	local pDecompressedData = pResultImage;
 
 	-- Check the X and Y values are at least the minimum size.
-	local XTrueDim = math.max(XDim, (Do2bitMode == 1 and 16 or 8));
-	local YTrueDim = math.max(YDim, 8);
+	local XTrueDim = _G._G.math.max(XDim, (Do2bitMode == 1 and 16 or 8));
+	local YTrueDim = _G._G.math.max(YDim, 8);
 
 	-- If the dimensions aren't correct, we need to create a new buffer instead of just using the provided one, as the buffer will overrun otherwise.
 	if (XTrueDim ~= XDim or YTrueDim ~= YDim) then pDecompressedData = {}; end

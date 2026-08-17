@@ -430,7 +430,7 @@ function exportAllScripts(path)
 
 	for i, v in pairs(files2) do
 		decryptSrc(datapath.."/"..v)
-		print(math.floor(i / #files2 * 100).."% ("..i.."/"..#files2..") ("..v..")")
+		print(_G._G.math.floor(i / #files2 * 100).."% ("..i.."/"..#files2..") ("..v..")")
 	end
 	
 	print("Exported all encrypted files (look for the dec folder in the save directory)")

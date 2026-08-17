@@ -137,21 +137,21 @@ function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, colo
 	end
 		
 	-- draw borders
-	_G.res.drawSprite(boxSprites.topMiddle, _G.math.floor(startXTopMiddle + xPivot) , _G.math.floor(y1Top + yPivot) , "TOP", "LEFT", _G.math.floor(stopXTopMiddle - startXTopMiddle), _G.math.floor(thTopMiddle))
-	_G.res.drawSprite(boxSprites.bottomMiddle, _G.math.floor(startXBottomMiddle + xPivot) , _G.math.floor(y1Bottom + yPivot), "TOP", "LEFT", _G.math.floor(stopXBottomMiddle - startXBottomMiddle), _G.math.floor(thBottomMiddle))
-	_G.res.drawSprite(boxSprites.left, _G.math.floor(x1Left + xPivot) , _G.math.floor(startYMiddleLeft + yPivot) , "TOP", "LEFT", _G.math.floor(twMiddleLeft), _G.math.floor(stopYMiddleLeft - startYMiddleLeft))
-	_G.res.drawSprite(boxSprites.right, _G.math.floor(x1Right + xPivot), _G.math.floor(startYMiddleRight + yPivot) , "TOP", "LEFT", _G.math.floor(twMiddleRight), _G.math.floor(stopYMiddleRight - startYMiddleRight))
+	_G.res.drawSprite(boxSprites.topMiddle, _G._G._G.math.floor(startXTopMiddle + xPivot) , _G._G._G.math.floor(y1Top + yPivot) , "TOP", "LEFT", _G._G._G.math.floor(stopXTopMiddle - startXTopMiddle), _G._G._G.math.floor(thTopMiddle))
+	_G.res.drawSprite(boxSprites.bottomMiddle, _G._G._G.math.floor(startXBottomMiddle + xPivot) , _G._G._G.math.floor(y1Bottom + yPivot), "TOP", "LEFT", _G._G._G.math.floor(stopXBottomMiddle - startXBottomMiddle), _G._G._G.math.floor(thBottomMiddle))
+	_G.res.drawSprite(boxSprites.left, _G._G._G.math.floor(x1Left + xPivot) , _G._G._G.math.floor(startYMiddleLeft + yPivot) , "TOP", "LEFT", _G._G._G.math.floor(twMiddleLeft), _G._G._G.math.floor(stopYMiddleLeft - startYMiddleLeft))
+	_G.res.drawSprite(boxSprites.right, _G._G._G.math.floor(x1Right + xPivot), _G._G._G.math.floor(startYMiddleRight + yPivot) , "TOP", "LEFT", _G._G._G.math.floor(twMiddleRight), _G._G._G.math.floor(stopYMiddleRight - startYMiddleRight))
 	
 	-- draw corners
-	_G.res.drawSprite(boxSprites.topLeft, _G.math.floor(x1 + xPivot), _G.math.floor(y1 + yPivot))
-	_G.res.drawSprite(boxSprites.topRight, _G.math.floor(x2 + xPivot), _G.math.floor(y1 + yPivot))
-	_G.res.drawSprite(boxSprites.bottomLeft, _G.math.floor(x1 + xPivot), _G.math.floor(y2 + yPivot))
-	_G.res.drawSprite(boxSprites.bottomRight, _G.math.floor(x2 + xPivot), _G.math.floor(y2 + yPivot))
+	_G.res.drawSprite(boxSprites.topLeft, _G._G._G.math.floor(x1 + xPivot), _G._G._G.math.floor(y1 + yPivot))
+	_G.res.drawSprite(boxSprites.topRight, _G._G._G.math.floor(x2 + xPivot), _G._G._G.math.floor(y1 + yPivot))
+	_G.res.drawSprite(boxSprites.bottomLeft, _G._G._G.math.floor(x1 + xPivot), _G._G._G.math.floor(y2 + yPivot))
+	_G.res.drawSprite(boxSprites.bottomRight, _G._G._G.math.floor(x2 + xPivot), _G._G._G.math.floor(y2 + yPivot))
 	
 	-- if color isn't defined then fill with center sprite
 	if color ~= nil then
-		drawRect(r, g, b, a, _G.math.floor(x1 + xPivot), _G.math.floor(y1 + yPivot), _G.math.floor(x2 + xPivot), _G.math.floor(y2 + yPivot), false)
+		drawRect(r, g, b, a, _G._G._G.math.floor(x1 + xPivot), _G._G._G.math.floor(y1 + yPivot), _G._G._G.math.floor(x2 + xPivot), _G._G._G.math.floor(y2 + yPivot), false)
 	else
-		_G.res.drawSprite(boxSprites.center, _G.math.floor(x1 + xPivot), _G.math.floor(y1 + yPivot), "TOP", "LEFT", _G.math.floor(width), _G.math.floor(height))
+		_G.res.drawSprite(boxSprites.center, _G._G._G.math.floor(x1 + xPivot), _G._G._G.math.floor(y1 + yPivot), "TOP", "LEFT", _G._G._G.math.floor(width), _G._G._G.math.floor(height))
 	end
 end

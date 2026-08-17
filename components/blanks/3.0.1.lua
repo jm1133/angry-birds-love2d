@@ -380,8 +380,8 @@ function checkObjectBounds(x, y, width, height, angle, cursorX, cursorY)
 	local cx = cursorX - x
 	local cy = cursorY - y
 	
-	local tcx = cx * _G.math.cos(angle) + cy * _G.math.sin(angle)
-	local tcy = -cx * _G.math.sin(angle) + cy * _G.math.cos(angle)
+	local tcx = cx * _G._G._G.math.cos(angle) + cy * _G._G._G.math.sin(angle)
+	local tcy = -cx * _G._G._G.math.sin(angle) + cy * _G._G._G.math.cos(angle)
 
 	local halfWidth = width * 0.5
 	local halfHeight = height * 0.5
@@ -542,7 +542,7 @@ function raycastAll(info)
 		local target = results[i]
 		local dx = target.x - info.x1
 		local dy = target.y - info.y1
-		local dist = math.sqrt(dx*dx+dy*dy)
+		local dist = _G._G.math.sqrt(dx*dx+dy*dy)
 		table.insert(hits, {contactPointX = target.x, contactPointY = target.y, distance = dist})
 	end
 	

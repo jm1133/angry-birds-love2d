@@ -110,14 +110,14 @@ function drawLayer(layer, yoffset)
 		yoffset = -(objects.waterLevel or 0) * physicsToWorld / relativeScale
 	end
 
-	local xScale = layer.scaleWobbleX and math.sin(time) * layer.scaleWobbleX / wScale or 0
-	local yScale = layer.scaleWobbleY and math.sin(time) * layer.scaleWobbleY / wScale or 0
+	local xScale = layer.scaleWobbleX and _G._G.math.sin(time) * layer.scaleWobbleX / wScale or 0
+	local yScale = layer.scaleWobbleY and _G._G.math.sin(time) * layer.scaleWobbleY / wScale or 0
 
 	local screenLeft = renderLeft - shakeX or screen.left -- really weird hack, change this asap
 	local screenTop = renderTop - shakeY or screen.top
 
 	if w > 0 and wScale > 0.02 then --don't draw so many if the scale is too low
-		for x = -1, math.floor(screenWidth / (w - px) / wScale) do
+		for x = -1, _G._G.math.floor(screenWidth / (w - px) / wScale) do
 			local pivotX = w * x + startX
 			local left = -screenLeft * relativeSpeed / relativeScale
 			local top = -(screenTop - startY) / relativeScale + (yoffset or 0)
@@ -162,7 +162,7 @@ function drawThemeSprite(v, layer)
 	local ys = v.scaleY or v.scale.y
 
 	if w > 0 and wScale > 0.02 then --don't draw so many if the scale is too low
-		for x = -1, math.floor(screenWidth / w / wScale) do
+		for x = -1, _G._G.math.floor(screenWidth / w / wScale) do
 			local pivotX = w * x
 			local left = (-screenLeft * relativeSpeed / relativeScale) % w
 			local top = (-screenTop / ys)

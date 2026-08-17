@@ -14,7 +14,7 @@ prevCursor = {x = 0, y = 0}
 function updateDisplayScale()
 	if autoScale > 0 then
 		local w, h = love.graphics.getDimensions()
-		displayScale = (math.min(w, h) / autoScale)
+		displayScale = (_G._G.math.min(w, h) / autoScale)
 
 		if displayScale >= .9 and displayScale <= 1.15 then --snap to 1 if close enough
 			displayScale = 1
@@ -22,8 +22,8 @@ function updateDisplayScale()
 	end
 	love.graphics.scale(displayScale)
 	
-	screenWidth = math.floor(love.graphics.getWidth() / displayScale)
-	screenHeight = math.floor(love.graphics.getHeight() / displayScale)
+	screenWidth = _G._G.math.floor(love.graphics.getWidth() / displayScale)
+	screenHeight = _G._G.math.floor(love.graphics.getHeight() / displayScale)
 end
 
 function updateMouse(dt)
@@ -130,7 +130,7 @@ function love.update(dt)
 
 		love.graphics.setScissor()
 
-		dt2 = speedUpPre(math.min(dt, 1/30) * (debugOpen and 0.2 or 1) * timeScale)
+		dt2 = speedUpPre(_G._G.math.min(dt, 1/30) * (debugOpen and 0.2 or 1) * timeScale)
 
 		local kp, kr, kh, cw = keyPressed, keyReleased, keyHold, cursor.wheel
 		if openPopups[1] or debugOpen or fmOpen then
@@ -151,7 +151,7 @@ function love.update(dt)
 				local t2 = love.timer.getTime()
 				setRenderState(0, 0, 1, 1)
 				res.useFont("FONT_BASIC")
-				res.drawString("", "update: "..(math.floor((t2 - t1) * 1000 * 10) / 10).." ms", 10, 10)
+				res.drawString("", "update: "..(_G._G.math.floor((t2 - t1) * 1000 * 10) / 10).." ms", 10, 10)
 			end
 		end
 

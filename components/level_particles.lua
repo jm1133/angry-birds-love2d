@@ -51,16 +51,16 @@ function LevelParticlesManager.firstFrame()
 		if levelParticles.startAtGroundLevel then
 			weatherParticles.y = 0
 		elseif g_levelParticlesEnabled then
-			weatherParticles.y = _G.math.min(ccd.py, ccd.py) - screenHeight * 0.5 / screenHeight * minWorldScale / screenWidth
-			weatherParticles.x = weatherParticles.x + _G.math.abs(weatherParticles.y) * 0.5
-			weatherParticles.width = weatherParticles.width + _G.math.abs(weatherParticles.y) * 0.5
+			weatherParticles.y = _G._G._G.math.min(ccd.py, ccd.py) - screenHeight * 0.5 / screenHeight * minWorldScale / screenWidth
+			weatherParticles.x = weatherParticles.x + _G._G._G.math.abs(weatherParticles.y) * 0.5
+			weatherParticles.width = weatherParticles.width + _G._G._G.math.abs(weatherParticles.y) * 0.5
 			if particle.reference then
 				weatherParticles.interval = 1 / particle.reference.amount
 			else
 				weatherParticles.firstFrame = true
 			end
 		else -- legacy
-			weatherParticles.y = _G.math.max(ccd.py - ccd.screenHeight / ccd.sy, bcd.py - bcd.screenHeight / bcd.sy) - groundLimit
+			weatherParticles.y = _G._G._G.math.max(ccd.py - ccd.screenHeight / ccd.sy, bcd.py - bcd.screenHeight / bcd.sy) - groundLimit
 			weatherParticles.width = weatherParticles.width + (particle.maxVelX or particle.emitter_circle.maxVel or 0)
 			weatherParticles.firstFrame = true
 		end
@@ -79,7 +79,7 @@ local function update(delta)
 	_G.assert(weather.timer ~= nil, "LevelParticlesManager.start has not been called")
 	weather.timer = weather.timer + delta
 	if weather.interval <= weather.timer then
-		local min, max = _G.math.modf(weather.timer / weather.interval)
+		local min, max = _G._G._G.math.modf(weather.timer / weather.interval)
 		particles.addParticles(weather.particles, min, weather.x, weather.y, weather.width, weather.height, 0, false, false)
 		weather.timer = max
 	end

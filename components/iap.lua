@@ -129,7 +129,7 @@ function replacePaymentFunctions()
 end
 
 function Payment.iapGetPurchaseLimit()
-	return math.huge
+	return _G._G.math.huge
 end
 
 

@@ -74,13 +74,13 @@ local updateParticles = function(dt, activeParticles)
 			
 			local t = p.time / p.lifeTime
 			if p.scaleBackAndForth then
-				t = 1.0 - math.abs(1.0 - 2.0 * t)
+				t = 1.0 - _G._G.math.abs(1.0 - 2.0 * t)
 			end
 			p.scale = p.scaleBegin + (p.scaleEnd - p.scaleBegin) * t
 			
 			if p.lifeTimeAnimation then
 				local sprite_count = #pt.sprites
-				index = math.ceil(sprite_count * t)
+				index = _G._G.math.ceil(sprite_count * t)
 				
 				if index < 1 then index = 1 end
 				if index > sprite_count then index = sprite_count end
@@ -125,8 +125,8 @@ local function addParticles(type, amount, x, y, w, h, angle, ignoreLimits, menu)
 		if particleAmount < hardLimitSimultaneousParticles or ignoreLimits then
 			particleAmount = particleAmount + 1
 			local p = { }
-			p.x = x + (_G.math.random(0, w) - 0.5*w ) -- * cos(angle)
-			p.y = y + (_G.math.random(0, h) - 0.5*h ) -- * sin(angle)
+			p.x = x + (_G._G._G.math.random(0, w) - 0.5*w ) -- * cos(angle)
+			p.y = y + (_G._G._G.math.random(0, h) - 0.5*h ) -- * sin(angle)
 			local mivx,mavx = pt.minVel or 0, pt.maxVel or 0
 			local mivy,mavy = pt.minVel or 0, pt.maxVel or 0
 			if pt.emitter_box then
@@ -143,33 +143,35 @@ local function addParticles(type, amount, x, y, w, h, angle, ignoreLimits, menu)
 			if circle then
 				local emitter_circle = pt.emitter_circle or pt
 				local min, max = emitter_circle.minAngleEmitter or -180, emitter_circle.maxAngleEmitter or 180
-				local angle = math.random(min, max) * math.pi / 180
-				local vel = math.random(emitter_circle.minVel or 0, emitter_circle.maxVel or 0)
-				local minAngle = p.minAngle and p.minAngle * math.pi / 180 or 0
-				local maxAngle = p.maxAngle and p.maxAngle * math.pi / 180 or 0
+				local angle = _G._G.math.random(min, max) * _G._G.math.pi / 180
+				local vel = _G._G.math.random(emitter_circle.minVel or 0, emitter_circle.maxVel or 0)
+				local minAngle = p.minAngle and p.minAngle * _G._G.math.pi / 180 or 0
+				local maxAngle = p.maxAngle and p.maxAngle * _G._G.math.pi / 180 or 0
 
-				p.x = x + (_G.math.random(0, w) - 0.5*w ) * math.cos(angle)
-				p.y = y + (_G.math.random(0, h) - 0.5*h ) * math.sin(angle)
-				p.angle = _G.math.random(minAngle, maxAngle)
-				p.xVel, p.yVel = math.cos(angle) * vel, math.sin(angle) * vel
+				p.x = x + (_G._G._G.math.random(0, w) - 0.5*w ) * _G._G.math.cos(angle)
+				p.y = y + (_G._G._G.math.random(0, h) - 0.5*h ) * _G._G.math.sin(angle)
+				p.angle = _G._G._G.math.random(minAngle, maxAngle)
+				p.xVel, p.yVel = _G._G.math.cos(angle) * vel, _G._G.math.sin(angle) * vel
 			else
-				p.xVel, p.yVel = _G.math.random(mivx, mavx), _G.math.random(mivy, mavy)
-				p.angle = _G.math.random(1, 3.14)
+				p.xVel, p.yVel = _G._G._G.math.random(mivx, mavx), _G._G._G.math.random(mivy, mavy)
+				p.angle = angle or _G._G._G.math.random(1, 3.14)
 			end
 			
 			if pt.randomizeBirthPosition == false then
-				p.x = x; p.y = y
+				p.x = x
+p.y = y
 			end
 			
 			-- i don't know if this is applied elsewhere
 			if type == "theme15rain" then			
-				p.angle = math.atan2(p.yVel, p.xVel)
+				p.angle = _G._G.math.atan2(p.yVel, p.xVel)
 			end
 			
 			-- BUGFIX : fixed RNG adding unintended extra values to the output
 			local function randomize(min, max)
-				min = min or 0; max = max or 0
-				return min + math.random() * (max - min)
+				min = min or 0
+max = max or 0
+				return min + _G._G.math.random() * (max - min)
 			end
 				
 			p.angleVel = randomize(pt.minAngleVel, pt.maxAngleVel)
@@ -177,7 +179,7 @@ local function addParticles(type, amount, x, y, w, h, angle, ignoreLimits, menu)
 			p.scaleEnd = randomize(pt.minScaleEnd, pt.maxScaleEnd)
 			p.scale = p.scaleBegin
 			p.type = type
-			p.sprite = pt.sprites[_G.math.random(1, #pt.sprites)]
+			p.sprite = pt.sprites[_G._G._G.math.random(1, #pt.sprites)]
 			p.sheet = pt.sheet
 			p.time = 0
 			p.lifeTime = pt.lifeTime
@@ -210,7 +212,7 @@ local function setHardLimit(limit)
 end
 
 local function setSoftLimit(limit, multiplier)
-	softLimitSimultaneousParticles = _G.math.random(limit, multiplier)
+	softLimitSimultaneousParticles = _G._G._G.math.random(limit, multiplier)
 end
 
 local function clear(kind)

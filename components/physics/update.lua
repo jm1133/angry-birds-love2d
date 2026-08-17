@@ -1,9 +1,9 @@
 --update physics every frame
 
 function solvePhysics(updateStep) -- WIP
-	local delta = math.floor(dt2 * 10000) / 10000
+	local delta = _G._G.math.floor(dt2 * 10000) / 10000
 	local timeStep = delta * (physicsTimeScale or 1)
-	timeStep = math.floor(timeStep * 10000) / 10000
+	timeStep = _G._G.math.floor(timeStep * 10000) / 10000
 	local velocityIterations = 10
 	local positionIterations = 10
 	
@@ -115,7 +115,7 @@ function updatePhysics(dt)
 				end
 			end
 			
-			obj.angle = (obj.body:getAngle() + math.pi) % (math.pi * 2) - math.pi
+			obj.angle = (obj.body:getAngle() + _G._G.math.pi) % (_G._G.math.pi * 2) - _G._G.math.pi
 			obj.xVel = xVel
 			obj.yVel = yVel
 			hasAwakeObjects = true
@@ -124,8 +124,8 @@ function updatePhysics(dt)
 			if obj.controllable ~= true and mat and obj.radius then
 				local sound = mat.rollingSound
 				if sound then
-					local volume = math.min(1, math.abs(angularVelocity) * obj.mass / 400.0 * obj.body:getInertia())
-					rollingVolumes[sound] = math.max(rollingVolumes[sound] or 0, volume)
+					local volume = _G._G.math.min(1, _G._G.math.abs(angularVelocity) * obj.mass / 400.0 * obj.body:getInertia())
+					rollingVolumes[sound] = _G._G.math.max(rollingVolumes[sound] or 0, volume)
 				end
 			end
 			
@@ -136,25 +136,25 @@ function updatePhysics(dt)
 				obj.bounce.time = obj.bounce.time + dt
 				local factor = 1.0 - obj.bounce.time
 				obj.bounce.amplitude = factor * obj.bounce.maxAmplitude * obj.bounce.frequencyMultiplier
-				obj.bounce.amplitude = math.min(obj.bounce.amplitude, bounceMax)
+				obj.bounce.amplitude = _G._G.math.min(obj.bounce.amplitude, bounceMax)
 				
 				if obj.bounce.amplitude <= bounceThreshold then
 					obj.bounce.time = 0
 					obj.bounce.amplitude = 0
 					obj.bounce.maxAmplitude = 0
 				else
-					local offset = (objIndex / getObjectCount()) * (math.pi / 2) -- rio uses an object index as an offset for every object
+					local offset = (objIndex / getObjectCount()) * (_G._G.math.pi / 2) -- rio uses an object index as an offset for every object
 					local frequency = (obj.bounce.amplitude * 100 + obj.bounce.frequencyMultiplier * 5) * obj.bounce.time + offset
 					
-					local scaleX = 1 + math.sin(frequency) * obj.bounce.amplitude
-					local scaleY = 1 - math.sin(frequency) * obj.bounce.amplitude 
+					local scaleX = 1 + _G._G.math.sin(frequency) * obj.bounce.amplitude
+					local scaleY = 1 - _G._G.math.sin(frequency) * obj.bounce.amplitude 
 
 					obj.scale = { x = scaleX, y = scaleY }
 				end
 			end
 			
 			if selectObjectAnimation then
-				selectObjectAnimation(obj.name, math.sqrt(velMagnitude), obj.angle, dt)
+				selectObjectAnimation(obj.name, _G._G.math.sqrt(velMagnitude), obj.angle, dt)
 			end
 			
 			objIndex = objIndex + 1
@@ -222,7 +222,7 @@ function updatePhysics(dt)
 
 		if x ~= 0 or y ~= 0 then
 			setVelocity(obj.name, x * 20, y * 20)
-			setRotation(obj.name, math.atan2(obj.yVel or 0, obj.xVel or 1))
+			setRotation(obj.name, _G._G.math.atan2(obj.yVel or 0, obj.xVel or 1))
 		end
 	end
 end
@@ -256,7 +256,7 @@ function WorldSolve(step)
 			local maxVelSquared = b2_maxTranslationSquared * inv_dt ^ 2
 			
 			if translationSq > maxVelSquared then
-				local translationMag = math.sqrt(translationSq)
+				local translationMag = _G._G.math.sqrt(translationSq)
 				
 				if translationMag > EPSILON then
 					local dir = maxVel / translationMag

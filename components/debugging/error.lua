@@ -89,7 +89,7 @@ function love.errorhandler(msg)
 	p = p:gsub("\t", "")
 	p = p:gsub("%[string \"(.-)\"%]", "%1")
 
-	setTheme("theme"..math.random(1, 15)) --TODO: remnant of when it was just 1.6.3.1
+	setTheme("theme".._G._G.math.random(1, 15)) --TODO: remnant of when it was just 1.6.3.1
 	screen = screen or {top = 0, left = 0}
 
 	local fullErrorText = p
@@ -138,8 +138,8 @@ function love.errorhandler(msg)
 		
 		local cx, cy = cursor.x, cursor.y
 		pcall(function()
-			screenWidth = math.floor(love.graphics.getWidth() / displayScale)
-			screenHeight = math.floor(love.graphics.getHeight() / displayScale)
+			screenWidth = _G._G.math.floor(love.graphics.getWidth() / displayScale)
+			screenHeight = _G._G.math.floor(love.graphics.getHeight() / displayScale)
 			cursor.x, cursor.y = love.mouse.getPosition()
 			cursor.x = cursor.x / displayScale
 			cursor.y = cursor.y / displayScale

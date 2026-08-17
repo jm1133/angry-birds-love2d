@@ -241,7 +241,7 @@ function loadGameFiles()
 end
 
 function love.load()
-	 --love.filesystem.exists should no longer be deprecated in 12
+	--love.filesystem.exists should no longer be deprecated in 12
 	if love.setDeprecationOutput then
 		love.setDeprecationOutput(false)
 	end
@@ -438,13 +438,13 @@ end
 function getTimeDifferenceInSeconds(time1, time2)
 	time1, time2 = timeToStamp(time1), timeToStamp(time2)
 	
-	return math.abs(time2 - time1)
+	return _G.math.abs(time2 - time1)
 end
 
 function getTimeDifference(time1, time2)
 	time1, time2 = timeToStamp(time1) or 0, timeToStamp(time2) or 0
 	
-	return getStampTime(math.abs(time2 - time1))
+	return getStampTime(_G.math.abs(time2 - time1))
 end
 
 function setWorldGravity(x, y)
@@ -490,4 +490,8 @@ function openPopup(title, text, buttons, pause, extra, height)
 	if pause and #openPopups == 1 then
 		updatePopup()
 	end
+end
+
+function restartGame()
+	love.event.quit("restart")
 end

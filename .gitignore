@@ -45,3 +45,4 @@ settings.lua
 slingTutorial.md
 vcruntime140.dll
 vcruntime140_1.dll
+buildTest/

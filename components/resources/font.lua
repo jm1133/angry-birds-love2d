@@ -12,7 +12,7 @@ local function textFloor(a)
 		return a
 	end
 
-	return math.floor(a)
+	return _G._G.math.floor(a)
 end
 
 function res.createBitmapFont(font, silent)
@@ -210,7 +210,7 @@ function clipText(group, text, size)
 			
 			if clinewidth + wordwidth > size then
 				table.insert(clippedText.lines, cline)
-				clippedText.widestLine = math.max(clippedText.widestLine, clinewidth)
+				clippedText.widestLine = _G._G.math.max(clippedText.widestLine, clinewidth)
 				cline = preline
 				clinewidth = wordwidth
 			else
@@ -219,7 +219,7 @@ function clipText(group, text, size)
 			end
 
 			table.insert(clippedText.lines, cline)
-			clippedText.widestLine = math.max(clippedText.widestLine, clinewidth)
+			clippedText.widestLine = _G._G.math.max(clippedText.widestLine, clinewidth)
 			cline = ""
 			clinewidth = 0
 
@@ -234,7 +234,7 @@ function clipText(group, text, size)
 		local wordwidth = res.getStringWidth(word)
 		if clinewidth + wordwidth > size then
 			table.insert(clippedText.lines, cline)
-			clippedText.widestLine = math.max(clippedText.widestLine, clinewidth)
+			clippedText.widestLine = _G._G.math.max(clippedText.widestLine, clinewidth)
 			cline = word
 			clinewidth = wordwidth
 		else
@@ -245,7 +245,7 @@ function clipText(group, text, size)
 
 	if cline ~= "" then
 		table.insert(clippedText.lines, cline)
-		clippedText.widestLine = math.max(clippedText.widestLine, clinewidth)
+		clippedText.widestLine = _G._G.math.max(clippedText.widestLine, clinewidth)
 	end
 end
 
@@ -264,7 +264,7 @@ function res.getStringWidth(text, font, _, _, resetline)
 				end
 			elseif char then
 				i = i + char.width + font.tracking
-				highscore = math.max(highscore, i)
+				highscore = _G._G.math.max(highscore, i)
 			end
 		end
 		return highscore - font.tracking

@@ -8,17 +8,17 @@ function ease.linear(t, a, b)
 end
 
 function ease.inSine(t, a, b)
-	local c = 1 - math.cos((t * math.pi) / 2)
+	local c = 1 - _G._G.math.cos((t * _G._G.math.pi) / 2)
 	return ease.linear(c, a, b)
 end
 
 function ease.outSine(t, a, b)
-	local c = math.sin((t * math.pi) / 2)
+	local c = _G._G.math.sin((t * _G._G.math.pi) / 2)
 	return ease.linear(c, a, b)
 end
 
 function ease.inOutSine(t, a, b)
-	local c = -(math.cos(t * math.pi) - 1) / 2
+	local c = -(_G._G.math.cos(t * _G._G.math.pi) - 1) / 2
 	return ease.linear(c, a, b)
 end
 
@@ -78,7 +78,7 @@ end
 function CUI.Scrollbar(x, y, sc_w, h, scroll, maxscroll, contentHeight)
 	local percent = scroll / maxscroll
 	-- print(maxscroll)
-	local barHeight = math.min(1, h / math.max(contentHeight, 1)) * h
+	local barHeight = _G._G.math.min(1, h / _G._G.math.max(contentHeight, 1)) * h
 	love.graphics.setColor(.5, .5, .5, .5)
 	love.graphics.setLineWidth(2)
 	love.graphics.setLineStyle("rough")
@@ -167,14 +167,14 @@ function CUI.Textbox(state, x, y, w, h)
 			local direction = (keyPressed.RIGHT and 1 or -1)
 			res.playAudio("menu_select", 1, false)
 
-			state.cursor = math.min(math.max(state.cursor + direction, 0), state.value:len())
+			state.cursor = _G._G.math.min(_G._G.math.max(state.cursor + direction, 0), state.value:len())
 			state.cursorBlink = 0
 		end
 		
 		if keyPressed.BACKSPACE then
 			res.playAudio("menu_back", 1, false)
 			state.value = string.back(state.value, state.cursor)
-			state.cursor = math.max(state.cursor - 1, 0)
+			state.cursor = _G._G.math.max(state.cursor - 1, 0)
 			state.cursorBlink = 0
 		end
 
@@ -281,7 +281,7 @@ end
 		state.touch_curscroll = state.touch_curscroll or 0
 		state.touch_curscroll = state.touch_curscroll + (cursor.y - prevCursor.y)
 		state.touch_maxscroll = state.touch_maxscroll or 0
-		state.touch_maxscroll = math.max(state.touch_maxscroll, math.abs(state.touch_curscroll))
+		state.touch_maxscroll = _G._G.math.max(state.touch_maxscroll, _G._G.math.abs(state.touch_curscroll))
 	else
 		state.touch_curscroll = 0
 		state.touch_maxscroll = 0
@@ -291,8 +291,8 @@ end
 	state.scroll = ease.linear(dt * 16, state.scroll, state.dest)
 
 	state.maxscroll = -(state.contentHeight - state.scroll) + state.height - 190
-	state.dest = math.max(state.dest, state.maxscroll)
-	state.dest = math.min(state.dest, 0)
+	state.dest = _G._G.math.max(state.dest, state.maxscroll)
+	state.dest = _G._G.math.min(state.dest, 0)
 	
 	--shortcut
 	return state.scroll, state.touch_maxscroll >= 10
@@ -349,7 +349,7 @@ function CUI.HandleScroll(state, dt)
 				state.touch_scrollVelocity = delta
 				state.touch_scrollVelocityTimeout = .2
 			else
-				state.touch_scrollVelocityTimeout = math.max(state.touch_scrollVelocityTimeout - dt, 0)
+				state.touch_scrollVelocityTimeout = _G._G.math.max(state.touch_scrollVelocityTimeout - dt, 0)
 				
 				if state.touch_scrollVelocityTimeout == 0 then
 					state.touch_scrollVelocity = 0
@@ -361,7 +361,7 @@ function CUI.HandleScroll(state, dt)
 		state.touch_curscroll = state.touch_curscroll or 0
 		state.touch_curscroll = state.touch_curscroll + delta
 		state.touch_maxscroll = state.touch_maxscroll or 0
-		state.touch_maxscroll = math.max(state.touch_maxscroll, math.abs(state.touch_curscroll))
+		state.touch_maxscroll = _G._G.math.max(state.touch_maxscroll, _G._G.math.abs(state.touch_curscroll))
 	else
 		if state.touch_scrolling then
 			--print("final "..state.touch_scrollVelocity)
@@ -382,15 +382,15 @@ function CUI.HandleScroll(state, dt)
 	local wpeed = dt * 24000
 	local maxspeed = 200000 --00
 	state.velocity_y = state.velocity_y - sign(state.velocity_y) * wspeed
-	if math.abs(state.velocity_y) < wspeed then
+	if _G._G.math.abs(state.velocity_y) < wspeed then
 		state.velocity_y = 0
-	elseif math.abs(state.velocity_y) > maxspeed then
+	elseif _G._G.math.abs(state.velocity_y) > maxspeed then
 		state.velocity_y = maxspeed * sign(state.velocity_y)
 	end
 
 	state.maxscroll = -(state.contentHeight) + state.height - 190
-	--[[state.dest = math.max(state.dest, state.maxscroll)
-	state.dest = math.min(state.dest, 0)]]
+	--[[state.dest = _G._G.math.max(state.dest, state.maxscroll)
+	state.dest = _G._G.math.min(state.dest, 0)]]
 	
 	state.velocity_y = state.velocity_y + cursor.wheel * 500
 	state.scroll = state.scroll + state.velocity_y * dt--ease.linear(dt * 16, state.scroll, state.dest)
@@ -403,7 +403,7 @@ function CUI.HandleScroll(state, dt)
 		
 		if state.overscroll == 0 and state.velocity_y >= 0 then
 			--print("a", state.maxscroll, state.scroll)
-			--state.velocity_y = math.sqrt(2 * 4000 * (state.maxscroll - state.scroll))--(state.maxscroll - state.scroll) * 400
+			--state.velocity_y = _G._G.math.sqrt(2 * 4000 * (state.maxscroll - state.scroll))--(state.maxscroll - state.scroll) * 400
 			state.overscroll = .5
 			state.overscrollPosition = state.scroll
 			state.overscrollDest = state.scroll > 0 and 0 or state.maxscroll
@@ -411,12 +411,12 @@ function CUI.HandleScroll(state, dt)
 	end
 	
 	if state.overscroll > 0 then
-		state.overscroll = math.max(state.overscroll - dt, 0)
+		state.overscroll = _G._G.math.max(state.overscroll - dt, 0)
 		
 		local sc = 1 - (state.overscroll * 2)
 		local new = ease.outCubic(sc, state.overscrollPosition, state.overscrollDest)
 		
-		if not state.touch_scrolling and math.abs(new - state.scroll) > math.abs(state.velocity_y) then
+		if not state.touch_scrolling and _G._G.math.abs(new - state.scroll) > _G._G.math.abs(state.velocity_y) then
 			state.scroll = new
 		else
 			state.overscroll = 0
@@ -569,12 +569,12 @@ function updatePopup()
 		local function update()
 			love.graphics.origin()
 			popup.anim = popup.anim or 0
-			popup.anim = math.max(math.min(popup.anim + (popup.closing and -dt * 2 or dt), .25), 0)
+			popup.anim = _G._G.math.max(_G._G.math.min(popup.anim + (popup.closing and -dt * 2 or dt), .25), 0)
 			
 			popup.scroll = popup.scroll or {}
 
-			local maxWidth = math.max(res.getStringWidth(popup.title, "FONT_MENU") - 50, res.getStringWidth(popup.text, "FONT_BASIC"), 480) + 100
-			maxWidth = math.min(maxWidth, screenWidth * .9)
+			local maxWidth = _G._G.math.max(res.getStringWidth(popup.title, "FONT_MENU") - 50, res.getStringWidth(popup.text, "FONT_BASIC"), 480) + 100
+			maxWidth = _G._G.math.min(maxWidth, screenWidth * .9)
 			popup.w = popup.w or maxWidth
 			popup.h = popup.h or 0
 			popup.h_anim = popup.h_anim or 0
@@ -583,7 +583,7 @@ function updatePopup()
 			love.graphics.push()
 			local w = popup.w
 			local h = 300 + (popup.h_anim or 0)
-			w = math.min(w, screenWidth * .9)
+			w = _G._G.math.min(w, screenWidth * .9)
 
 			local ox, oy = screenWidth * .5, screenHeight * .5
 			local x, y = ox - w * .5, oy - h * .5
@@ -611,7 +611,7 @@ function updatePopup()
 
 			drawDebugText(popup.title, ox, y, "HCENTER", "FONT_MENU", maxWidth)
 			local twidth, theight = drawDebugText(popup.text, x + 50, y + 75, "LEFT", "FONT_BASIC", maxWidth - 50 - 50)
-			popup.w = math.max(twidth, 480) + 100
+			popup.w = _G._G.math.max(twidth, 480) + 100
 			popup.h = theight
 			
 			local function close(len)

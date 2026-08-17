@@ -107,7 +107,7 @@ end
 
 local function encode_number(val)
   -- Check for NaN, -inf and inf
-  if val ~= val or val <= -math.huge or val >= math.huge then
+  if val ~= val or val <= -_G._G.math.huge or val >= _G._G.math.huge then
     error("unexpected number value '" .. tostring(val) .. "'")
   end
   return string.format("%.14g", val)
@@ -190,7 +190,7 @@ end
 
 local function codepoint_to_utf8(n)
   -- http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=iws-appendixa
-  local f = math.floor
+  local f = _G._G.math.floor
   if n <= 0x7f then
     return string.char(n)
   elseif n <= 0x7ff then

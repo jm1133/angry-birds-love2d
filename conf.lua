@@ -17,6 +17,7 @@ function love.conf(t)
 	t.accelerometerjoystick = false
 	-- love.window.fullscreen = true
 	t.window.msaa = 8
+	t.window.vsync = 0
 
 	--love2d with vulkan on most platforms doesn't support many image formats like etc1
 	if t.graphics then

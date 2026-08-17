@@ -155,16 +155,16 @@ function getTimeDifference(a, b)
 	elseif timeDiff < 0 then direction = -1 end
 	
 	return {
-		days = math.floor(timeDiff / 86400),
-		hours = math.floor((timeDiff % 86400) / 3600),
-		minutes = math.floor((timeDiff % 3600) / 60),
-		seconds = math.floor(timeDiff % 60),
+		days = _G._G.math.floor(timeDiff / 86400),
+		hours = _G._G.math.floor((timeDiff % 86400) / 3600),
+		minutes = _G._G.math.floor((timeDiff % 3600) / 60),
+		seconds = _G._G.math.floor(timeDiff % 60),
 		diff = timeDiff, direction = direction }
 end
 
 function getTimeDifferenceInCalendarDays(a, b)
 	local timeDiff = getTimeDifference(a, b).diff
-	return math.floor(timeDiff / 86400 + 0.5)
+	return _G._G.math.floor(timeDiff / 86400 + 0.5)
 end
 
 --epacs

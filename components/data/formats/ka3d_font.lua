@@ -22,8 +22,8 @@ function readFont(fileData)
 		data.chars[char].height = readInt(fileData,pos+6)
 		data.chars[char].pivotY = readInt(fileData,pos+8)
 
-		data.maxascending = math.max(data.maxascending, data.chars[char].pivotY)
-		data.maxdescending = math.max(data.maxdescending, -data.chars[char].pivotY + data.chars[char].height)
+		data.maxascending = _G._G.math.max(data.maxascending, data.chars[char].pivotY)
+		data.maxdescending = _G._G.math.max(data.maxdescending, -data.chars[char].pivotY + data.chars[char].height)
 
 		skip(10)
 	end

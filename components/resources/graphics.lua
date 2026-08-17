@@ -103,7 +103,7 @@ end
 
 function res.setClipRect(x1, y1, x2, y2)
 	if pivotDebug then return end
-	x1, y1, x2, y2 = math.max(x1 or 0, 0), math.max(y1 or 0, 0), math.max(x2 or 0, 0), math.max(y2 or 0, 0)
+	x1, y1, x2, y2 = _G._G.math.max(x1 or 0, 0), _G._G.math.max(y1 or 0, 0), _G._G.math.max(x2 or 0, 0), _G._G.math.max(y2 or 0, 0)
 	love.graphics.setScissor(x1 * displayScale, y1 * displayScale, x2 * displayScale, y2 * displayScale)
 end
 
@@ -130,7 +130,7 @@ function res.getSpritePivot(sheet, sprite)
 	return 0, 0
 end
 
-function drawSprite(sheet, sprite, x, y, vanchor, hanchor, width, height)
+function drawSprite(sheet, sprite, x, y, vanchor, hanchor, width, height, angle)
 	if sprite == g_currentCursorName and (joystick and physicsEnabled) then return end
 
 	local image = type(sprite) == "string" and (cachedcs[sprite] or cachedimgs[sprite]) or sprite
@@ -169,7 +169,8 @@ function drawSprite(sheet, sprite, x, y, vanchor, hanchor, width, height)
 		love.graphics.translate(x, y)
 		love.graphics.translate(-xpr, -ypr)
 		love.graphics.translate(ox, oy)
-		love.graphics.rotate(drawangle)
+		local drawingAngle = angle or drawangle
+		love.graphics.rotate(drawingAngle)
 		
 		love.graphics.translate(-ox, -oy)
 		love.graphics.scale(wm, hm)
@@ -215,7 +216,7 @@ end
 
 function setAngleRAD(angle) --5.3.1 what is this?
 	--return
-	drawangle = angle * math.pi / 180
+	drawangle = angle * _G._G.math.pi / 180
 end
 
 function res.getCompoSpriteBounds(sheet, composprite) --not used in 1.6.3.1
@@ -295,8 +296,8 @@ function drawRubberband(x1, y1, x2, y2, width, sprite)
 	sprite = checkSprite(sprite)
 	if not sprite then return end
 
-	local dist = math.sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
-	local angle = math.atan2(y2 - y1, x2 - x1)
+	local dist = _G._G.math.sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+	local angle = _G._G.math.atan2(y2 - y1, x2 - x1)
 
 	love.graphics.push()
 
@@ -496,16 +497,16 @@ local function loadSheet(sheet, usecomposprites)
 					local sy0, sy1 = vv.y - sprite.py, vv.y + sprite.height - sprite.py
 
 					--get bounds
-					x0, x1 = math.min(x0 or sx0, sx0), math.max(x1 or sx1, sx1)
-					y0, y1 = math.min(y0 or sy0, sy0), math.max(y1 or sy1, sy1)
+					x0, x1 = _G._G.math.min(x0 or sx0, sx0), _G._G.math.max(x1 or sx1, sx1)
+					y0, y1 = _G._G.math.min(y0 or sy0, sy0), _G._G.math.max(y1 or sy1, sy1)
 					
 					--set the pivots
 					px = -x0
 					py = -y0
 
 					--set the dimensions
-					width = math.abs(x1 - x0)
-					height = math.abs(y1 - y0)
+					width = _G._G.math.abs(x1 - x0)
+					height = _G._G.math.abs(y1 - y0)
 				end
 			end
 			

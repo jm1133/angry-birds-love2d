@@ -57,9 +57,9 @@ function createJoint(joint)
 		
 		newJoint = love.physics.newRevoluteJoint(obj1.body, obj2.body, anchorX, anchorY, collideConnected)
 		
-		joint.motorSpeed = math.rad(joint.motorSpeed) or 0.0
+		joint.motorSpeed = _G._G.math.rad(joint.motorSpeed) or 0.0
 		joint.lowerLimit = lowerLimit or 0.0
-		joint.upperLimit = upperLimit or math.pi
+		joint.upperLimit = upperLimit or _G._G.math.pi
 
 		joint.motor = motor or false
 		joint.maxTorque = maxTorque or 10000.0
@@ -85,7 +85,7 @@ function createJoint(joint)
 			collideConnected
 		)
 		
-		joint.motorSpeed = math.rad(joint.motorSpeed) or 0.0
+		joint.motorSpeed = _G._G.math.rad(joint.motorSpeed) or 0.0
 		joint.lowerLimit = lowerLimit or 0.0
 		joint.upperLimit = upperLimit or 5.0
 
@@ -135,7 +135,7 @@ function updateObjectMass(name)
 	if obj and obj.shape then
 		local _, _, mass, _ = obj.shape:computeMass(obj.density)
 		mass = mass * 100
-		--mass = math.floor(mass * 100000) / 100000 --round to the 5th decimal for 32-bit accuracy
+		--mass = _G._G.math.floor(mass * 100000) / 100000 --round to the 5th decimal for 32-bit accuracy
 		obj.mass = mass
 	end
 end
@@ -359,7 +359,7 @@ end
 function insertSortedByDepth(z, content)
 	local lo, hi = 1, #zOrderedObjects
 	while lo <= hi do
-		local mid = math.floor((lo + hi) / 2)
+		local mid = _G._G.math.floor((lo + hi) / 2)
 		
 		local sprite = zOrderedObjects[mid]
 		if sprite.z <= z then
@@ -376,7 +376,7 @@ function addObjectToRenderQueue(name)
 	local obj = objects.world[name]
 	obj.z_order = tonumber(obj.z_order) or getZOrder(name)
 	
-	local z = math.floor(obj.z_order)
+	local z = _G._G.math.floor(obj.z_order)
 	if not isObjectInRenderQueue(name) then
 		insertSortedByDepth(z, {name = obj.name, z = obj.z_order})
 	end

@@ -64,7 +64,7 @@ function hasBody(object)
 end
 
 function setRotation(object, rotation)
-	objects.world[object].angle = rotation % (math.pi * 2)
+	objects.world[object].angle = rotation % (_G._G.math.pi * 2)
 	if objects.world[object].body then
 		objects.world[object].body:setAngle(rotation)
 		objects.world[object].body:setAngularVelocity(0)
@@ -185,7 +185,7 @@ function getTrajectory(name)
 	local maxVel = b2_maxTranslation / velocityScale
 	local gravity = worldgravity.y
 	
-	local velocityMagnitude = math.sqrt(xVel * xVel + yVel * yVel)
+	local velocityMagnitude = _G._G.math.sqrt(xVel * xVel + yVel * yVel)
 	if maxVel < velocityMagnitude then
         xVel = xVel / velocityMagnitude * maxVel
         yVel = yVel / velocityMagnitude * maxVel
@@ -200,7 +200,7 @@ function getTrajectory(name)
 		
 		
 		local point = {x = x, y = y, t = currentTime}
-		table.insert(trajectoryTable, math.floor(currentTime) + 1, point)
+		table.insert(trajectoryTable, _G._G.math.floor(currentTime) + 1, point)
 		currentTime = currentTime + timeStep
 	end
 	
@@ -238,7 +238,7 @@ function updateForceAdder(object, dt)
 				local audio = object.soundWhenForceApplied
 				
 				if type(audio) == "table" then
-					audio = audio[math.random(1, #audio)]
+					audio = audio[_G._G.math.random(1, #audio)]
 				end
 				
 				res.playAudio(audio, volume, false, 0)
@@ -259,10 +259,10 @@ function updateForceAdder(object, dt)
 		
 		if object.forceRelative and object.forceRelative ~= 0.0 then
 			local forceRelative = object.forceRelative
-			if math.abs(forceRelative) > 0.0 then
+			if _G._G.math.abs(forceRelative) > 0.0 then
 				local bodyAngle = body:getAngle()
-				forceX = math.cos(bodyAngle) * forceRelative
-				forceY = math.sin(bodyAngle) * forceRelative
+				forceX = _G._G.math.cos(bodyAngle) * forceRelative
+				forceY = _G._G.math.sin(bodyAngle) * forceRelative
 			end
 		else
 			local baseForce = 1.0 --object.airResistance or 1.0
@@ -281,13 +281,13 @@ function updateForceAdder(object, dt)
 			if object.targetVelocity then
 				local maxVel = object.targetVelocity
 			
-				if maxVel <= math.abs(velX) then
+				if maxVel <= _G._G.math.abs(velX) then
 					if velX * forceX > 0.0 then
 						forceX = 0.0
 					end
 				end
 				
-				if maxVel <= math.abs(velY) then
+				if maxVel <= _G._G.math.abs(velY) then
 					if velY * forceY > 0.0 then
 						forceY = 0.0
 					end
@@ -345,8 +345,8 @@ function updateFriction(object, dt)
 	if fx == 0.0 and fy == 0.0 then return end
 	
 	local angle = body:getAngle()
-	local cosA = math.cos(angle)
-	local sinA = math.sin(angle)
+	local cosA = _G._G.math.cos(angle)
+	local sinA = _G._G.math.sin(angle)
 	
 	local determinant = (cosA * cosA) + (sinA * sinA)
 	if determinant ~= 0.0 then
@@ -594,7 +594,7 @@ function resizeCircle(name, radius)
 
 	if obj.shape then
 		--set the radius
-		radius = math.max(radius, 0)
+		radius = _G._G.math.max(radius, 0)
 		obj.shape:setRadius(radius)
 		obj.radius = radius
 		obj.height = radius
@@ -750,7 +750,7 @@ function postSolveBounce(obj1, obj2, contact)
 			local kNormal = inv_mass_a + inv_mass_b + (relativeNormal_A ^ 2 * inv_inertia_a) 
 							+ (relativeNormal_B ^ 2 * inv_inertia_b)
 	
-            local restitution = math.max(o1.restitution, o2.restitution)
+            local restitution = _G._G.math.max(o1.restitution, o2.restitution)
             local normalImpulse = (-(1 + restitution) * velAlongNormal) / kNormal
 			
 			local tangentX, tangentY = -ny, nx
@@ -760,9 +760,9 @@ function postSolveBounce(obj1, obj2, contact)
 							+ (relativeTangent_B ^ 2 * inv_inertia_b)
 			
             local velAlongTangent = rvx * tangentX + rvy * tangentY
-            local friction = math.sqrt(o1.friction * o2.friction)
-			local maxFriction = math.abs(normalImpulse) * friction
-            local tangentImpulse = math.max(-maxFriction, math.min(maxFriction, -velAlongTangent / kTangent))
+            local friction = _G._G.math.sqrt(o1.friction * o2.friction)
+			local maxFriction = _G._G.math.abs(normalImpulse) * friction
+            local tangentImpulse = _G._G.math.max(-maxFriction, _G._G.math.min(maxFriction, -velAlongTangent / kTangent))
 			
 			local forceX = (normalImpulse * nx) + (tangentImpulse * tangentX)
 			local forceY = (normalImpulse * ny) + (tangentImpulse * tangentY)
@@ -853,12 +853,12 @@ function portalBeginContact(obj1, obj2, contact)
 	local portalAngle = deltaTime + portal.body:getAngle()
 	local destAngle =  deltaTime + teleportationTarget.body:getAngle()
 	
-	local sinSource = math.sin(portalAngle)
-	local cosSource = math.cos(portalAngle)
-	local sinDest = math.sin(destAngle)
-	local cosDest = math.cos(destAngle)
+	local sinSource = _G._G.math.sin(portalAngle)
+	local cosSource = _G._G.math.cos(portalAngle)
+	local sinDest = _G._G.math.sin(destAngle)
+	local cosDest = _G._G.math.cos(destAngle)
 	
-	local angleDiff = math.acos(cosSource * cosDest + sinSource * sinDest)
+	local angleDiff = _G._G.math.acos(cosSource * cosDest + sinSource * sinDest)
 	
 	local width = portal.width
 	local scaleFactor = 0.92
@@ -868,15 +868,15 @@ function portalBeginContact(obj1, obj2, contact)
 	
 	local dx = collider.x - sourceX
 	local dy = collider.y - sourceY
-	local distance = math.sqrt(dx * dx + dy * dy)
+	local distance = _G._G.math.sqrt(dx * dx + dy * dy)
 	
 	local newX = destX
 	local newY = destY
 	
 	if distance > 0.0 then
-        local approachAngle = math.atan2(sinSource * dx - cosSource * dy, cosSource * dx + sinSource * dy)
+        local approachAngle = _G._G.math.atan2(sinSource * dx - cosSource * dy, cosSource * dx + sinSource * dy)
         
-        local threshold = (math.pi / 2) * deltaTime
+        local threshold = (_G._G.math.pi / 2) * deltaTime
         
         if threshold < angleDiff then
             approachAngle = -approachAngle
@@ -884,8 +884,8 @@ function portalBeginContact(obj1, obj2, contact)
         
         local newPosAngle = destAngle - approachAngle
         
-        newX = destX + math.cos(newPosAngle) * distance
-        newY = destY + math.sin(newPosAngle) * distance
+        newX = destX + _G._G.math.cos(newPosAngle) * distance
+        newY = destY + _G._G.math.sin(newPosAngle) * distance
     end
 	
 	local portalObject = portal.portal
@@ -949,8 +949,8 @@ local function applyBouncing(obj1, obj2)
 	end
 	local dx = obj1.xVel - obj2.xVel
 	local dy = obj1.yVel - obj2.yVel
-	local relativeVelocity = math.sqrt(dx*dx+dy*dy) * obj1.mass / 10
-	local maxBounceAmplitude = math.min(relativeVelocity * 0.02, 0.1)
+	local relativeVelocity = _G._G.math.sqrt(dx*dx+dy*dy) * obj1.mass / 10
+	local maxBounceAmplitude = _G._G.math.min(relativeVelocity * 0.02, 0.1)
 	
 	obj1.bounce.maxAmplitude = maxBounceAmplitude
 	--obj2.bounce.maxAmplitude = maxBounceAmplitude
@@ -999,7 +999,7 @@ function basicBeginContact(obj1, obj2, contact)
 	
 	--later versions from 5.1.0(?) basically reimplement collision, so just do it through there instead
 	if MuseumCollisions then
-		--onCollision(o1.name, o2.name, effectiveDamage, math.floor(damage), contactNormalX, contactNormalY, nil, 1, {})
+		--onCollision(o1.name, o2.name, effectiveDamage, _G._G.math.floor(damage), contactNormalX, contactNormalY, nil, 1, {})
 		local results = {}
 		MuseumCollisions.onCollision(o1.name, o2.name, contactNormalX, contactNormalY, x1, y1, results)
 
@@ -1026,7 +1026,7 @@ function basicBeginContact(obj1, obj2, contact)
 		local diffx = m2 * vx1 - m1 * vx
 		local diffy = m2 * vy1 - m1 * vy
 		
-		local linearForce = _G.math.sqrt(diffx * diffx + diffy * diffy) * 0.1
+		local linearForce = _G._G._G.math.sqrt(diffx * diffx + diffy * diffy) * 0.1
 		
 		local currentScore = scoreTable.blocks.score
 		
@@ -1073,9 +1073,9 @@ function basicBeginContact(obj1, obj2, contact)
 		local damageDone = block1Destroyed or block2Destroyed
 		
 		if enableDebug and damageDone then
-			table.insert(collisionsList, 1, {o1 = o1.name, o2 = o2.name, veloc = math.floor(linearForce * 10) / 10,
-				damage = damage, m1 = math.floor((o1.strength + damage or -1) * 10) / 10,
-				m2 = math.floor((o2.strength + damage or -1) * 10) / 10})
+			table.insert(collisionsList, 1, {o1 = o1.name, o2 = o2.name, veloc = _G._G.math.floor(linearForce * 10) / 10,
+				damage = damage, m1 = _G._G.math.floor((o1.strength + damage or -1) * 10) / 10,
+				m2 = _G._G.math.floor((o2.strength + damage or -1) * 10) / 10})
 		end
 		
 		destroyBreakableJoints(o1.name, linearForce)
@@ -1092,11 +1092,11 @@ function basicBeginContact(obj1, obj2, contact)
 		end
 
 		if joystick and linearForce >= 6 then
-			joystick:setVibration(math.min(linearForce / 15, 1), math.min(linearForce / 15, 1), .1)
+			joystick:setVibration(_G._G.math.min(linearForce / 15, 1), _G._G.math.min(linearForce / 15, 1), .1)
 		end
 		
 		if currentScore == old_score and damage > 0 then
-			local score = math.floor(linearForce) * 10.0
+			local score = _G._G.math.floor(linearForce) * 10.0
 			scoreTable.blocks.score = currentScore + score
 		end
 		
@@ -1133,7 +1133,7 @@ function basicBeginContact(obj1, obj2, contact)
 		local birdMass = bird.body:getMass() * 100
 		local vx, vy = bird.body:getLinearVelocity()
 		
-		local linearForce = (_G.math.sqrt(vx * vx + vy * vy) * birdMass) / 10.0 -- the factor is 60.0 in newer versions
+		local linearForce = (_G._G._G.math.sqrt(vx * vx + vy * vy) * birdMass) / 10.0 -- the factor is 60.0 in newer versions
 		
 		local effectiveDamage = linearForce * damageMultiplier
 		local damage = 0
@@ -1157,7 +1157,7 @@ function basicBeginContact(obj1, obj2, contact)
 						
 						local overkillDamage
 						if bird.useLegacyCollisionPath then
-							--60.0 * (math.abs(newStrength) / birdMass) / effectiveDamage * 1.2 NEW
+							--60.0 * (_G._G.math.abs(newStrength) / birdMass) / effectiveDamage * 1.2 NEW
 							overkillDamage = ((-newStrength / birdMass) / effectiveDamage) * 10.0 * 1.75 * velocityMultiplier
 						else
 							overkillDamage = ((effectiveDamage - strength) / effectiveDamage) * velocityMultiplier
@@ -1171,7 +1171,7 @@ function basicBeginContact(obj1, obj2, contact)
 						local birdVelocityY = vy * overkillDamage
 						setVelocity(bird.name, birdVelocityX, birdVelocityY)
 						
-						damage = strength--math.min(damageDealt, strength)
+						damage = strength--_G._G.math.min(damageDealt, strength)
 					else
 						damage = damageDealt
 					end
@@ -1181,18 +1181,18 @@ function basicBeginContact(obj1, obj2, contact)
 		end
 		
 		if enableDebug and damage > 0 then
-			table.insert(collisionsList, 1, {o1 = o1.name, o2 = o2.name, veloc = math.floor(linearForce * 10) / 10,
-				damage = effectiveDamage, m1 = math.floor((o1.strength + damage or -1) * 10) / 10,
-				m2 = math.floor((o2.strength + damage or -1) * 10) / 10})
+			table.insert(collisionsList, 1, {o1 = o1.name, o2 = o2.name, veloc = _G._G.math.floor(linearForce * 10) / 10,
+				damage = effectiveDamage, m1 = _G._G.math.floor((o1.strength + damage or -1) * 10) / 10,
+				m2 = _G._G.math.floor((o2.strength + damage or -1) * 10) / 10})
 		end
 		
-		if birdCollision then birdCollision(bird.name, block.name, effectiveDamage, math.floor(damage), 0, contactNormalX) end
+		if birdCollision then birdCollision(bird.name, block.name, effectiveDamage, _G._G.math.floor(damage), 0, contactNormalX) end
 		if onCollision then
-			--onCollision(o1.name, o2.name, effectiveDamage, math.floor(damage), contactNormalX, contactNormalY, nil, 1, {})
+			--onCollision(o1.name, o2.name, effectiveDamage, _G._G.math.floor(damage), contactNormalX, contactNormalY, nil, 1, {})
 			onCollision(o1.name, o2.name, contactNormalX, contactNormalY, 1, 1, {})
 		end
 		if joystick and effectiveDamage >= 6 then
-			joystick:setVibration(math.min(effectiveDamage / 15, 1), math.min(effectiveDamage / 15, 1), .1)
+			joystick:setVibration(_G._G.math.min(effectiveDamage / 15, 1), _G._G.math.min(effectiveDamage / 15, 1), .1)
 		end
 			
 	else -- bird to bird collision 
@@ -1203,11 +1203,11 @@ function basicBeginContact(obj1, obj2, contact)
 		local vx1, vy1 = b2:getLinearVelocity()
 		local length1 = vx1 * vx1 + vy1 * vy1
 		
-		local collisionVelocity = math.sqrt(length)
+		local collisionVelocity = _G._G.math.sqrt(length)
 		local mass = o1.mass
 		
 		if length < length1 then
-			collisionVelocity = math.sqrt(length1)
+			collisionVelocity = _G._G.math.sqrt(length1)
 			mass = o2.mass
 		end
 		

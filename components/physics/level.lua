@@ -82,7 +82,7 @@ function loadLevelFile(levelName, dateString)
 	end
 	
 	today = string.format("%d-%d-%d", now.year, now.month, now.day)
-	timeToNext = math.max(os.difftime(tomorrow, date), 0)
+	timeToNext = _G._G.math.max(os.difftime(tomorrow, date), 0)
 end
 
 function getLoadStatus()

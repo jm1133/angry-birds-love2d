@@ -199,7 +199,7 @@ local function rd_int_basic(src, s, e, d)
 	-- end
 
 	for i = s, e, d do
-		local mul = 256 ^ math.abs(i - s)
+		local mul = 256 ^ _G._G.math.abs(i - s)
 
 		num = num + mul * string.byte(src, i, i)
 	end

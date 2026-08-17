@@ -167,7 +167,7 @@ end
 
 function res.setTrackVolume(vol, track)
 	local channel = track + 1
-	channelVolumes[channel] = math.min(math.max(vol, 0), 1)
+	channelVolumes[channel] = _G._G.math.min(_G._G.math.max(vol, 0), 1)
 
 	if audiochannels then
 		for i, sound in ipairs(audiochannels[channel]) do

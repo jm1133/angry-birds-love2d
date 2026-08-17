@@ -17,9 +17,9 @@ end
 
 function updateGamepad(dt)
 	local x, y = joystick:getAxis(1), joystick:getAxis(2)
-	-- if math.abs(x) < .1 then x = 0 end
-	-- if math.abs(y) < .1 then y = 0 end
-	if math.abs(x) < .1 and math.abs(y) < .1 then
+	-- if _G._G.math.abs(x) < .1 then x = 0 end
+	-- if _G._G.math.abs(y) < .1 then y = 0 end
+	if _G._G.math.abs(x) < .1 and _G._G.math.abs(y) < .1 then
 		x, y = 0, 0
 	end
 
@@ -57,8 +57,8 @@ function updateGamepad(dt)
 		end
 	else
 		--move cursor
-		gpcx = math.max(20, math.min(gpcx + (x * 800 * dt), screenWidth - 20))
-		gpcy = math.max(20, math.min(gpcy + (y * 800 * dt), screenHeight - 20))
+		gpcx = _G._G.math.max(20, _G._G.math.min(gpcx + (x * 800 * dt), screenWidth - 20))
+		gpcy = _G._G.math.max(20, _G._G.math.min(gpcy + (y * 800 * dt), screenHeight - 20))
 		if gpc <= 0 then
 			registerGamepadKey(joystick, "LBUTTON", "a")
 

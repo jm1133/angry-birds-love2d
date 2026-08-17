@@ -587,7 +587,7 @@ function NativeCloudAssets.loadAsset(pack)-- there seems to be evidence that thi
 		if code == 200 then
 			local data = body
 			
-			local dataSize = math.floor(#data / 1000 * 100) / 100
+			local dataSize = _G._G.math.floor(#data / 1000 * 100) / 100
 			print(string.format("Downloaded '%s', %d kB", pack, dataSize))
 			
 			love.filesystem.createDirectory("cdn")
@@ -765,7 +765,7 @@ g_iap_item_info = {}
 
 function getProductWithIapId(id)
 	local type = "specialOffer"
-	return {price = {coins = math.random() * 100}, purchaseType = "coins", amount = 0}, type--nil
+	return {price = {coins = _G._G.math.random() * 100}, purchaseType = "coins", amount = 0}, type--nil
 end
 
 setmetatable(g_iap_item_info, {
@@ -780,7 +780,7 @@ PortalObjectTeleporter = {}
 -- TODO : fix angles + collision detection
 function PortalObjectTeleporter:recalculateLinearVelocity()
 	local vx, vy = self.object.body:getLinearVelocity()
-	local speed = math.sqrt(vx * vx + vy * vy)
+	local speed = _G._G.math.sqrt(vx * vx + vy * vy)
 	
 	local EPSILON = 1.1920929e-07
 	
@@ -789,22 +789,22 @@ function PortalObjectTeleporter:recalculateLinearVelocity()
 	end
 	
 	local deltaTime = dt2 * (physicsTimeScale or 1)
-	local portalAngleDiff = math.acos(self.destAngleCos * self.sourceAngleCos + self.destAngleSin * self.sourceAngleSin)
+	local portalAngleDiff = _G._G.math.acos(self.destAngleCos * self.sourceAngleCos + self.destAngleSin * self.sourceAngleSin)
 							
-	local isLargerAngle = math.pi / 2 * deltaTime < portalAngleDiff
+	local isLargerAngle = _G._G.math.pi / 2 * deltaTime < portalAngleDiff
 	
 	local transformedVelocity = {x = 0, y = 0}
 	
 	local angleDelta = self.sourceAngle - self.destAngle
 	
 	if isLargerAngle then
-		local velAngle = math.atan2(vy, vx)
+		local velAngle = _G._G.math.atan2(vy, vx)
 		local newAngle = velAngle + deltaTime - angleDelta
 
-		newAngle = math.atan2(math.sin(newAngle), math.cos(newAngle))
+		newAngle = _G._G.math.atan2(_G._G.math.sin(newAngle), _G._G.math.cos(newAngle))
 		
-		transformedVelocity.x = math.cos(newAngle) * speed
-		transformedVelocity.y = math.sin(newAngle) * speed
+		transformedVelocity.x = _G._G.math.cos(newAngle) * speed
+		transformedVelocity.y = _G._G.math.sin(newAngle) * speed
 		print("true", newAngle, velAngle, angleDelta)
 	else
 		local normalX = self.sourceAngleCos
@@ -820,8 +820,8 @@ function PortalObjectTeleporter:recalculateLinearVelocity()
 			newAngle = -newAngle
 		end
 		
-		local cosAngle = math.cos(newAngle)
-		local sinAngle = math.sin(newAngle)
+		local cosAngle = _G._G.math.cos(newAngle)
+		local sinAngle = _G._G.math.sin(newAngle)
 		
 		transformedVelocity.x = angleReflected.x * cosAngle - angleReflected.y * sinAngle
 		transformedVelocity.y = angleReflected.y * cosAngle + angleReflected.x * sinAngle
@@ -853,8 +853,8 @@ function PortalObjectTeleporter:new(object, x, y, angle, minSpeed, sourcePath, e
 	portal.sourceX = sourceX
 	portal.sourceY = sourceY
 	portal.sourceAngle = sourceAngle
-	portal.sourceAngleSin = math.sin(sourceAngle)
-	portal.sourceAngleCos = math.cos(sourceAngle)
+	portal.sourceAngleSin = _G._G.math.sin(sourceAngle)
+	portal.sourceAngleCos = _G._G.math.cos(sourceAngle)
 	
 	portal.entryX = entryX
 	portal.entryY = entryY
@@ -863,8 +863,8 @@ function PortalObjectTeleporter:new(object, x, y, angle, minSpeed, sourcePath, e
 	portal.destX = destX
 	portal.destY = destY
 	portal.destAngle = destAngle
-	portal.destAngleSin = math.sin(destAngle)
-	portal.destAngleCos = math.cos(destAngle)
+	portal.destAngleSin = _G._G.math.sin(destAngle)
+	portal.destAngleCos = _G._G.math.cos(destAngle)
 	
 	portal.portalDelay = portalDelay
 	portal.effect = effect
@@ -891,13 +891,13 @@ function PortalObjectTeleporter:update(dt)
 		
 		local body = self.object.body
 		local vx, vy = body:getLinearVelocity()
-		local speed = math.sqrt(vx * vx + vy * vy)
+		local speed = _G._G.math.sqrt(vx * vx + vy * vy)
 		
 		if speed > 0.0 then
 			local normalizedSpeed = (vx * self.sourceAngleCos + vy * self.sourceAngleSin) / speed
-			local velocityAngle = math.acos(normalizedSpeed)
+			local velocityAngle = _G._G.math.acos(normalizedSpeed)
 			
-			local angleThreshold = math.pi / 2 * dt
+			local angleThreshold = _G._G.math.pi / 2 * dt
 			
 			if angleThreshold < velocityAngle then
 				if self.needsVelocityRecalc then
@@ -908,14 +908,14 @@ function PortalObjectTeleporter:update(dt)
 				local x, y = body:getPosition()
 				local dx = x - self.entryX
 				local dy = y - self.entryY
-				local distanceToEntry = math.sqrt(dx * dx + dy * dy)
+				local distanceToEntry = _G._G.math.sqrt(dx * dx + dy * dy)
 				
 				if distanceToEntry <= 0.0 then
 					return false
 				end
 				
 				local approachDot = (dx * self.sourceAngleCos + dy * self.sourceAngleSin) / distanceToEntry
-				local approachAngle = math.acos(approachDot)
+				local approachAngle = _G._G.math.acos(approachDot)
 				
 				if approachAngle < angleThreshold then
 					return false
@@ -993,7 +993,7 @@ function PortalObjectTeleporter:playEffects(isEntry)
 			local assetName = effect.id
 			
 			if type(assetName) == "table" then
-				assetName = assetName[math.random(1, #assetName)]
+				assetName = assetName[_G._G.math.random(1, #assetName)]
 			end
 			
 			local effectType = effect.type
