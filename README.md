@@ -11,6 +11,7 @@ By default, the engine is bundled with **Angry Birds Classic 1.6.3.1 (PC)**, alt
 # Downloading the Engine
 
 First, download the latest LÖVE2D nightly build and extract it into a folder.
+> I recommend using https://nightly.link/love2d/love/workflows/main/main for the nightly build
 
 > **Note:** The download may contain a ZIP file inside another ZIP file. Be sure to extract the one containing the executable, DLLs, and other engine files.
 
