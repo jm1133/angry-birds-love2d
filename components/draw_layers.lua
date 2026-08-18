@@ -564,13 +564,24 @@ function drawObject(v)
 
 	-- Motion blur for the currently flying bird
 	if motionBlurEnabled
-		and flyingBird
-		and v.name == flyingBird.name
-		and flyingBird.body
-		and not flyingBird.isDestroyed
+		--and flyingBird
+		--and v.name == flyingBird.name
+		and v.body
+		and not v.isDestroyed
 	then
 
-		local vx, vy = flyingBird.body:getLinearVelocity()
+		local vx, vy = v.body:getLinearVelocity()
+		local blurDistance = motionBlurDistance
+		local blurStrength = motionBlurStrength
+		local blurSamples = v.boostBlurSamples or motionBlurSamples
+		local boostBlurTargetSamples = motionBlurSamples * 3
+
+		if getObjectDefinition(v.name) ~= nil then
+			if getObjectDefinition(v.name).specialty == "BOOST" and birdSpecialtyAvailable == false then
+				blurDistance = blurDistance * (blurSamples / 6)
+				blurStrength = blurStrength * 1.5
+			end
+		end
 
 		-- Convert physics velocity to world/render velocity
 		vx = vx * physicsToWorld
@@ -578,17 +589,33 @@ function drawObject(v)
 		local oldBlend1, oldBlend2 = love.graphics.getBlendMode()
 		love.graphics.setBlendMode("alpha", "alphamultiply")
 
-		for i = motionBlurSamples, 1, -1 do
+		if getObjectDefinition(v.name).specialty == "BOOST" and birdSpecialtyAvailable == false then
+			if blurSamples < boostBlurTargetSamples then
+				if v.boostBlurSamples ~= nil and v.boostBlurAdditionTimer ~= nil then
+					if _G.deltaTime ~= nil then
+						v.boostBlurAdditionTimer += _G.deltaTime * 25
+					else
+						v.boostBlurAdditionTimer += 0.05
+					end
 
-			local t = i / motionBlurSamples
+					if v.boostBlurAdditionTimer >= 1 then
+						v.boostBlurAdditionTimer = 0
+						v.boostBlurSamples += 1
+					end
+				end
+			end
+		end
+		for i = blurSamples, 1, -1 do
 
-			local blurX = x - vx * motionBlurDistance * t
-			local blurY = y - vy * motionBlurDistance * t
+			local t = i / blurSamples
+
+			local blurX = x - vx * blurDistance * t
+			local blurY = y - vy * blurDistance * t
 
 			love.graphics.push()
 
 			-- Older samples are more transparent
-			local alpha = motionBlurStrength * (1 - t)
+			local alpha = blurStrength * (1 - t)
 
 			love.graphics.setColor(1, 1, 1, alpha)
 
