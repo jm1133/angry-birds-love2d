@@ -4,6 +4,7 @@
 local ALLOW_LUA_CACHE = true
 
 --replace a missing filename due to case sensitivity
+
 function findCaseInsensitive(dir)
 	local dir, paths = resolvePath(dir)
 
@@ -17,21 +18,30 @@ function findCaseInsensitive(dir)
 
 		for lookfor_i = 1, #paths - 1 do
 			local lookfor = table.concat(paths, "/", 1, lookfor_i)
+
 			for _, f in ipairs(love.filesystem.getDirectoryItems(lookfor)) do
+
 				if lookfor_i == #paths - 1 then
+
 					if f:lower() == name:lower() then
 						local output = lookfor.."/"..f
 						local _, paths = resolvePath(output)
 						return output, paths --return that and do ANOTHER resolvepath
 					end
+
 				else
+
 					if f:lower() == paths[lookfor_i + 1]:lower() then
 						paths[lookfor_i + 1] = f
 						break
 					end
+
 				end
+
 			end
+
 		end
+
 	end
 
 	-- print("findCaseInsensitive: could not find "..dir)
@@ -39,7 +49,9 @@ function findCaseInsensitive(dir)
 end
 
 --look recursively for any file and return its path
+
 local function findAnything(dir)
+
 	for i, file in ipairs(love.filesystem.getDirectoryItems(dir)) do
 		local path = dir.."/"..file
 		local info = love.filesystem.getInfo(path)
@@ -51,7 +63,9 @@ local function findAnything(dir)
 
 			if result then return result end --ding ding ding 2!!
 		end
+
 	end
+
 end
 
 function identifySrc(src)
@@ -65,6 +79,7 @@ end
 
 --load either plain text lua, a precompiled chunk with fione,
 --a 7-zipped file, an aes-256 encrypted file, or all of the above
+
 function decryptSrc(filename, src)
 	--use already-decrypted assets if available, moved here for json support
 	local decinfo = ALLOW_LUA_CACHE and love.filesystem.getInfo("/dec/"..filename)
@@ -80,11 +95,13 @@ function decryptSrc(filename, src)
 	if not src then return end
 
 	--temporary file for use in 7-zip
+
 	local function temp_file()
 		local dec_filename = "/dec/"..filename
 		love.filesystem.createDirectory(dec_filename:match(".*/") or "")
 		
 		local success, message = love.filesystem.write(dec_filename, src)
+
 		if not success then
 			print("decryptSrc: writing to temporary file failed ("..tostring(message)..")")
 			return
@@ -97,6 +114,7 @@ function decryptSrc(filename, src)
 	
 	if kind == "binary" then --it's probably encrypted..
 		--let's use libcrypto as a dll/so
+
 		if AES then
 			local iv = nil --iv is always nil
 			local key = AES.FindKey(src, AES.Keys.Assets, iv)
@@ -117,6 +135,7 @@ function decryptSrc(filename, src)
 			print("decryptSrc: Could not run libcrypto for "..tostring(filename))
 			return --just don't bother trying to run an encrypted file
 		end
+
 	end
 	
 	if kind == "lzma" then --new versions use lzma rather than 7z
@@ -128,6 +147,7 @@ function decryptSrc(filename, src)
 		--xz utils' lzma works differently
 		local cmd = love._os == "Windows" and "lzma d -so" or "lzma -d -c"
 		local file = io.popen(cmd.." \""..love.filesystem.getSaveDirectory()..dec_filename.."\"", mode)
+
 		if file then
 			src = file:read("*a")
 			file:close()
@@ -140,6 +160,7 @@ function decryptSrc(filename, src)
 		else
 			print("decryptSrc: Could not run LZMA")
 		end
+
 	end
 	
 	if kind == "7z" then --looks like it's 7-zipped too
@@ -195,15 +216,19 @@ function makeChunk(filename, env)
 		--shorten the filename because lua's traceback truncates filenames.. at the end
 		local shortname = filename
 		local datapath = "/"..datapath
+
 		if shortname:sub(1, datapath:len()) == datapath then
 			shortname = "dp"..shortname:sub(datapath:len() + 1, -1)
 		end
+
 		local lua, err = loadstring(src, shortname)
 		return false, lua, err
 	end
+
 end
 
 --very important in later codebases
+
 function loadLuaFileToObject(filename, ctx, key, lenient)
 	local newname, paths = findCaseInsensitive(datapath.."/"..filename)
 	filename = newname or filename
@@ -211,6 +236,7 @@ function loadLuaFileToObject(filename, ctx, key, lenient)
 	ctx = ctx or _G
 
 	local env
+
 	if type(key) == "table" then
 		env = key
 	elseif type(key) == "string" and key ~= "" then
@@ -227,15 +253,18 @@ function loadLuaFileToObject(filename, ctx, key, lenient)
 
 	if lua and not err then
 		--fione needs the env on script loading so this should only work on plaintext luas
+
 		if not compiled then
 			setfenv(lua, env)
 		end
 
 		
 		--emulate scope behavior
+
 		if not getmetatable(env) then
 			setmetatable(env, {
 				__index = function(self, k)
+
 					if k == "_G" or k == "gamelua" then
 						return _G
 					elseif k == "this" then
@@ -244,12 +273,16 @@ function loadLuaFileToObject(filename, ctx, key, lenient)
 					elseif k == "loadAssets" then
 						return loadAssets
 					end
+
 				end,
 				__newindex = function(self, k, v)
+
 					if k ~= "filename" then
 						rawset(self, k, v)
 					end
+
 				end
+
 			})
 		end
 
@@ -258,12 +291,15 @@ function loadLuaFileToObject(filename, ctx, key, lenient)
 		if filename == "/"..datapath.."/"..scriptPath.."/options.lua" and queueCheatsEnabled then
 			cheatsEnabled = true
 		end
+
 	elseif not lenient then
+
 		if checkDirectory(filename) then
 			--error("Could not load Lua file: "..filename.."\n"..tostring(err))
 			print("Could not load Lua file: "..filename.."\n"..tostring(lua))
 		else
 			print("Could not load Lua file: "..filename.."\n"..tostring(err))
+
 			if enableDebug then
 				openPopup("Warning",
 						"Could not load Lua file: "..filename.."\n"..tostring(err),
@@ -274,14 +310,18 @@ function loadLuaFileToObject(filename, ctx, key, lenient)
 						}
 					, true)
 			end
+
 		end
+
 	else
 		return tostring(lua)
 	end
+
 end
 
 --also used in some versions
 --absw: blocks makes the file load into .blocks, unpack unpacks all tables inside
+
 function loadLuaFile(filename, envKey, blocks, unpack, lenient)
 	local newname, paths = findCaseInsensitive(datapath.."/"..filename)
 	filename = newname or filename
@@ -291,6 +331,7 @@ function loadLuaFile(filename, envKey, blocks, unpack, lenient)
 	local og_env = env
 
 	if lua and not err then
+
 		if not compiled and not blocks then
 			setfenv(lua, env)
 		end
@@ -312,21 +353,30 @@ function loadLuaFile(filename, envKey, blocks, unpack, lenient)
 
 			local _mt = {
 				__newindex = function(self, k, v)
+
 					if type(v) == "table" then
+
 						if unpack then
+
 							for kk, vv in pairs(v) do
+
 								if type(vv) == "table" then
 									kk = vv.definition or kk
 									rawset(env, kk, vv)
 								end
+
 							end
+
 						else
 							rawset(env, k, v)
 						end
+
 					else
 						rawset(self, k, v)
 					end
+
 				end
+
 			}
 
 			setmetatable(og_env, _mt)
@@ -335,9 +385,11 @@ function loadLuaFile(filename, envKey, blocks, unpack, lenient)
 		return lua()
 	elseif not lenient then
 		-- error("Could not load Lua file: "..filename)
+
 		if not checkDirectory(filename) then
 			err = "File does not exist."
 		end
+
 		print("Could not load Lua file: "..filename.."\n"..tostring(err))
 	end
 
@@ -354,15 +406,19 @@ function runLuaFile(filename, lenient)
 		return lua()
 	elseif not lenient then
 		-- error("Could not load Lua file: "..filename)
+
 		if not checkDirectory(filename) then
 			err = "File does not exist."
 		end
+
 		error("Could not load Lua file: "..filename.."\n"..tostring(err))
 	end
+
 end
 
 --also used in some versions
 local alreadyloaded = {}
+
 function requireFile(filename)
 	if alreadyloaded[filename] then return end
 
@@ -375,20 +431,27 @@ function requireFile(filename)
 end
 
 --strips .. and separates directories into a table
+
 function resolvePath(path)
 	local resolved = {}
+
 	for part in path:gmatch("[^/]+") do
+
 		if part == ".." then
 			table.remove(resolved)
 		elseif part ~= "." and part ~= "" then
 			table.insert(resolved, part)
 		end
+
 	end
+
 	return "/"..table.concat(resolved, "/"), resolved
 end
 
 local req = require
+
 function require(filename)
+
 	if filename:sub(1, 4) == "data" then
 		local newname, paths = resolvePath("/"..(filename:gsub("\\", "/")))
 		newname = table.concat(paths, "/", 2, #paths)
@@ -399,11 +462,13 @@ function require(filename)
 end
 
 --debugging function to decrypt and save a lua file into the save directory
+
 function exportLua(filename)
 	local newname, paths = findCaseInsensitive(datapath.."/"..filename)
 	filename = newname or filename
 
 	local src = decryptSrc(filename)
+
 	if src then
 		--findCaseInsensitive
 		-- paths = resolvePath(newname)
@@ -414,17 +479,21 @@ function exportLua(filename)
 	else
 		print("Could not decrypt file \""..filename.."\"")
 	end
+
 end
 
 --decrypt all json and lua files in the data folder
+
 function exportAllScripts(path)
 	local files = native.FileSystem.enumerate(path or "", nil, nil, true)
 	local files2 = {}
 
 	for i, v in pairs(files) do
+
 		if endsWith(i, ".lua") or endsWith(i, ".json") then
 			table.insert(files2, i)
 		end
+
 	end
 	
 

@@ -1,4 +1,5 @@
 --rio and related games
+
 function logMedioEvent()
 end
 
@@ -35,26 +36,34 @@ end
 
 function setCollisionEnabled(object, enabled)
 	local obj = objects.world[object]
+
 	if obj and obj.fixture then
 		local categories, _, group = obj.fixture:getFilterData()
 		obj.fixture:setFilterData(categories, enabled and 1 or 0, group)
 	end
+
 end
 
 --updateThemeSpriteAnimations
+
 function rotateThemeSprites(dt)
 	return
 end
 
 function removeJointsFromObject(name)
+
 	for jointName, joint in pairs(objects.joints) do
+
 		if joint.end1 == name or joint.end2 == name then
 			destroyJoint(jointName)
 		end
+
 	end
+
 end
 
 --latest pc version
+
 function getGameTimer()
 	return love.timer.getTime()
 end
@@ -76,6 +85,7 @@ function clearMenuParticlesNative()
 end
 
 --absw
+
 function native_setWaterDensity(name, density)
 	return
 end
@@ -117,6 +127,7 @@ function clearParticlesNative()
 end
 
 --implementable
+
 function setTextureScale(name, textureScale)
 	return
 end
@@ -140,6 +151,7 @@ function loadRovioNewsContent(rovioNewsURL)
 end
 
 function getTimeDifference(a, b)
+
 	local function getDate(t)
 		local timestamp = t
 		timestamp.hour = timestamp.hour or t.hours

@@ -132,23 +132,27 @@ end
 
 function updateObjectMass(name)
 	local obj = objects.world[name]
+
 	if obj and obj.shape then
 		local _, _, mass, _ = obj.shape:computeMass(obj.density)
 		mass = mass * 100
 		--mass = _G._G.math.floor(mass * 100000) / 100000 --round to the 5th decimal for 32-bit accuracy
 		obj.mass = mass
 	end
+
 end
 
 function setupColliders()
 	local meta = {
 		__index = function(t, collider)
+
 			if blockTable.collider_types and blockTable.collider_types[collider] then
 				return blockTable.collider_types[collider]
 			end
 			
 			return nil
 		end
+
 	}
 	
 	colliders = setmetatable({}, meta)
@@ -161,6 +165,7 @@ CATEGORY_BIRD = 0x0008
 CATEGORY_EAGLE = 0x0010
 
 local function setupObject(obj)
+
 	if obj.fixture.setRestitutionThreshold then
 		obj.fixture:setRestitutionThreshold(0.2)
 	end
@@ -190,6 +195,7 @@ function createPolygon(name, sprite, xpos, ypos, w, h, density, friction, restit
 		objects.world[name] = {name = name, sprite = sprite, y = ypos, x = xpos, width = 1, height = 1, density = h,
 			friction = density, restitution = friction, controllable = collision or false, z_order = controllable, mass = 1, xVel = 0, yVel = 0, angle = 0}
 		verts = {}
+
 		for _, v in pairs(w) do
 			table.insert(verts, v.x)
 			table.insert(verts, v.y)
@@ -233,10 +239,12 @@ function createBox(name, sprite, xpos, ypos, w, h, density, friction, restitutio
 	
 	if density == 0 then 
 		obj.density = 1
+
 		if name ~= "ground" then
 			obj.fixture:setCategory(CATEGORY_IMMOVABLE)
 			obj.fixture:setMask(CATEGORY_EAGLE)
 		end
+
 	end
 
 	obj.fixture:setRestitution(restitution)
@@ -291,6 +299,7 @@ function createCircle(name, sprite, xpos, ypos, w, density, friction, restitutio
 end
 
 -- used for crates in rio (WIP)
+
 function createBlock(data)
 	local def = data.block
 	objects.world[data.name] = {name = data.name, sprite = data.sprite, y = data.y, x = data.x, width = data.w, height = data.h, density = def.density,
@@ -311,6 +320,7 @@ function createBlock(data)
     }
 	
     obj.fixtures = {}
+
     for _, shape in ipairs(edges) do
         local fix = love.physics.newFixture(obj.body, shape, def.density)
         fix:setRestitution(def.restitution)
@@ -328,6 +338,7 @@ end
 
 local function getZOrder(name)
 	local data
+
 	if loadedObjects then
 		data = blockTable.blocks[loadedObjects.world[name].definition]
 	else
@@ -346,10 +357,13 @@ local function getZOrder(name)
 end
 
 local function isObjectInRenderQueue(name)
+
 	for k, v in ipairs(zOrderedObjects) do
+
 		if v.name == name then
 			return true
 		end
+
 	end
 	
 	return false
@@ -358,15 +372,18 @@ end
 
 function insertSortedByDepth(z, content)
 	local lo, hi = 1, #zOrderedObjects
+
 	while lo <= hi do
 		local mid = _G._G.math.floor((lo + hi) / 2)
 		
 		local sprite = zOrderedObjects[mid]
+
 		if sprite.z <= z then
 			lo = mid + 1
 		else
 			hi = mid - 1
 		end
+
 	end
 	
 	table.insert(zOrderedObjects, lo, content)
@@ -377,14 +394,19 @@ function addObjectToRenderQueue(name)
 	obj.z_order = tonumber(obj.z_order) or getZOrder(name)
 	
 	local z = _G._G.math.floor(obj.z_order)
+
 	if not isObjectInRenderQueue(name) then
 		insertSortedByDepth(z, {name = obj.name, z = obj.z_order})
 	end
+
 end
 
 --absw
+
 function createJoints(joints)
+
 	for k, v in pairs(joints) do
 		createJoint(v)
 	end
+
 end

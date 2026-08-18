@@ -21,40 +21,56 @@ function createDynamicHandler(name)
 	local ingameProfile --hacky; for loadInGame
 	
 	--TODO: queue and asset freeing
+
 	local function loadFromLoadlist(list, profile, group)
+
 		for _, asset in ipairs(list[group]) do
+
 			if asset[2] ~= 1 then
 				res.createSpriteSheet(imagePath.."/"..profile.."/"..asset[1])
 			else
 				res.createCompoSpriteSet(imagePath.."/"..profile.."/"..asset[1])
 			end
+
 		end
+
 	end
 	
 	local function load(group)
+
 		if requirements[group] then
+
 			for i, v in pairs(requirements[group]) do
 				local profile = selectAssetProfile(v)
 				-- print("pr", v, profile)
+
 				if endsWith(profile, "_cloud") then
 					profile = profile:sub(1, #profile - 6)
 				end
 				
 				for i, list in ipairs(loadlistNames) do
+
 					if not loadlists[list][profile] then
 						loadLuaFile(imagePath.."/"..profile.."/"..list..".lua")
 
 						--json loadlists
+
 						if checkDirectory(imagePath.."/"..profile.."/"..list..".json") then
 							assetLoadList = assetLoadList or {}
+
 							for profileName, profileValue in pairs(readJSONToLuaTable(imagePath.."/"..profile.."/"..list..".json")) do
+
 								for groupName, groupValue in pairs(profileValue) do
 									assetLoadList[profile][groupName] = assetLoadList[profile][groupName] or {}
+
 									for i, v in pairs(groupValue) do
 										table.insert(assetLoadList[profile][groupName], {v.filename, v.type})
 									end
+
 								end
+
 							end
+
 						end
 
 						if not assetLoadList then break end
@@ -63,6 +79,7 @@ function createDynamicHandler(name)
 					end
 
 					local dat = loadlists[list] and loadlists[list][profile]
+
 					if dat and dat[v] then
 						-- print("yes", profile, v)
 						loadFromLoadlist(dat, profile, v)
@@ -71,40 +88,60 @@ function createDynamicHandler(name)
 							ingameLoadlist = dat
 							ingameProfile = profile
 						end
+
 					-- else
 					-- 	print("no", profile, v)
 					end
+
 				end
+
 			end
+
 		end
+
 	end
 	
 	function handler.addreq(...)
 		print("addreq:")
+
 		for i, v in pairs{...} do
+
 			if type(v) == "table" then
+
 				for i, v in pairs(v) do
 					requirements[i] = v
 				end
+
 			end
+
 		end
+
 		for i, v in pairs{...} do
+
 			if type(v) == "table" then
 				print(i..":")
+
 				for i, v in pairs(v) do
+
 					if type(v) == "table" then
 						print("", i..":")
+
 						for i, v in pairs(v) do
 							print("", "", i, v)
 						end
+
 					else
 						print("", i, v)
 					end
+
 				end
+
 			else
 				print(v)
 			end
+
 		end
+
 		return
 	end
 	
@@ -117,17 +154,25 @@ function createDynamicHandler(name)
 
 	function handler.load(...)
 		print("handler.load:", ...)
+
 		for i, v in pairs{...} do
+
 			if type(v) == "table" then
+
 				for i, v in pairs(v) do
 					load(v)
 				end
+
 			else
 				load(v)
 			end
+
 		end
+
 	end
+
 	function handler.release(...) end
+
 	function handler.isLoaded(...) return true end
 	
 	function handler.loadInGame(sprites, theme)--?
@@ -141,6 +186,7 @@ function createDynamicHandler(name)
 	end
 
 	--2.4.0
+
 	function handler.delayclear()
 		return
 	end
@@ -150,25 +196,36 @@ function createDynamicHandler(name)
 	end
 
 	--4.3.2
+
 	function handler.cacheProfiles(...)
 		print("cacheProfiles:")
+
 		for i, v in pairs{...} do
+
 			if type(v) == "table" then
 				print(i..":")
+
 				for i, v in pairs(v) do
+
 					if type(v) == "table" then
 						print("", i..":")
+
 						for i, v in pairs(v) do
 							print("", "", i, v)
 						end
+
 					else
 						print("", i, v)
 					end
+
 				end
+
 			else
 				print(v)
 			end
+
 		end
+
 	end
 	
 	function handler.releaseInGame(a, theme)
@@ -180,17 +237,20 @@ function createDynamicHandler(name)
 	end
 
 	--5.2.5
+
 	function handler.isLoadgroupLoaded()--?
 		return true --trust
 	end
 
 	--5.3.1
+
 	function handler.loadAssets()--?
 		return
 	end
 	
 	
 	--classic 6.3.0
+
 	function handler.loadAvatarSheets()--?
 		return
 	end
@@ -203,15 +263,18 @@ function createDynamicHandler(name)
 	--classic 8.0.3
 	handler.queue = handler.load
 	handler.queueAssets = handler.load
+
 	function handler.queueInGame(a)
 		--a contains sprite names in the level
 		print("handler.queueInGame")
 		handler.load{"ingame"}
 	end
+
 	handler.releaseAssetGroup = handler.release
 
 
 	--time travel
+
 	function handler.loadBdAdsPictureSheets()--?
 		return
 	end
@@ -229,11 +292,13 @@ end
 --called for all animations at the start of the game
 local anims = {}
 local preloaded = {}
+
 function flashAnimationPreLoad(name, filename, bundlename)
 	preloaded[name] = readJSONToLuaTable(filename)
 end
 
 --tag is a unique name, animName is the animation filename
+
 function flashAnimationLoad(tag, animName)
 	anims[tag] = {
 		name = animName,
@@ -279,14 +344,19 @@ end
 --gamelua.flashAnimationSetTranslation(r0_12.tag, x, y)
 
 function updateFlashAnimation(dt)
+
 	for i, anim in pairs(anims) do
+
 		if anim.playing then
 			anim.time = anim.time + dt
 		end
+
 	end
+
 end
 
 local function handleKeyframes(keys, time, easing)
+
 	for i, key in ipairs(keys) do
 		local keytime = key[1]
 		if time < keytime then break end
@@ -302,12 +372,14 @@ local function handleKeyframes(keys, time, easing)
 			end
 			
 			local final = {}
+
 			for i, v in ipairs(target) do
 				final[i] = ease.linear(t, target[i], dest[i])
 			end
 			
 			return final
 		end
+
 	end
 	
 	--fall back to the last one (TODO: "after": "REPEAT")
@@ -324,9 +396,11 @@ function drawFlashAnimation(tag)
 	local clip = action.clips[anim.name:lower().."_"..anim.playAction] --does it really lower?
 	
 	--keyframe types: translation, scale, rotation, alpha, sprite
+
 	local function draw(v)
 		--TODO: move logic to update
 		love.graphics.push()
+
 		if v.name then
 			local target = clip.targets[v.name]
 			local translation = handleKeyframes(target.translation.keyframes, anim.time, easing)
@@ -339,12 +413,16 @@ function drawFlashAnimation(tag)
 		end
 		
 		if v.children then
+
 			for i, vv in ipairs(v.children) do
 				draw(vv)
 			end
+
 		end
+
 		love.graphics.pop()
 	end
+
 	draw(data)
 	--res.drawSprite("RED", 100, 100)
 	--res.drawSprite("RED_BAND", 100, 100)
@@ -409,6 +487,7 @@ end
 native.GetTimeStamp = {}
 
 --these functions are probably called in order
+
 function native.GetTimeStamp.fetchTimeStamp(_, uid)
 	return
 end
@@ -447,11 +526,14 @@ end
 --NativeCloudPayment.userHasNonConsumable(product)
 
 --called after everything is set up
+
 function NativeCloudPayment.ready()
 	iapHasPaymentProvider = true
+
 	if NativeCloudPayment.onInitialized then
 		NativeCloudPayment.onInitialized()
 	end
+
 end
 
 function NativeCloudPayment.getLocalizedPrices()
@@ -461,6 +543,7 @@ function NativeCloudPayment.getLocalizedPrices()
 		__index = function(self, k)
 			return "idk"
 		end
+
 	})
 
 	return prices
@@ -485,6 +568,7 @@ function NativeCloudPayment.getAvailableProducts()
 		__index = function(self, k)
 			return {price = 12}
 		end
+
 	})
 
 	return products
@@ -497,6 +581,7 @@ function NativeCloudPayment.getProductDescriptions() --5.3.1
 		__index = function(self, k)
 			return "a"
 		end
+
 	})
 
 	return descriptions
@@ -509,6 +594,7 @@ function NativeCloudPayment.getProductDatas() --5.3.1
 		__index = function(self, k)
 			return {items = {}}
 		end
+
 	})
 
 	return datas
@@ -533,11 +619,13 @@ local statuses_new = {
 
 function NativeCloudPayment.buyProduct(product)
 	iapBuyItem(product, function(product, reason)
+
 		if reason == statuses_new.PAYMENT_SUCCEEDED then
 			NativeCloudPayment.onProductPurchased(product)
 		elseif reason == statuses_new.PAYMENT_CANCELLED then
 			NativeCloudPayment.onPurchaseCanceled(product)
 		end
+
 	end, statuses_new)
 end
 
@@ -603,7 +691,9 @@ function NativeCloudAssets.loadAsset(pack)-- there seems to be evidence that thi
 			else
 				downloadStatus[pack] = "NO CONNECTION"
 			end
+
 		end
+
 	end)
 end
 
@@ -624,16 +714,21 @@ function NativeCloudAssets:onInitialized()
 end
 
 function NativeCloudAssets.getPackStatus(asset)
+
     if downloads[asset] then
         return "CACHED"
 	else
+
 		if not downloadStatus[asset] and not blacklisted[asset] then
 			local connected = NativeCloudAssets.isInternetConnected()
+
 			if connected and CloudDownloadIndicator.isVisible then
 				downloadStatus[asset] = "PROCESSING"
 				NativeCloudAssets.loadAsset(asset)
 			end
+
 		end
+
     end
     
     if downloadStatus[asset] then
@@ -644,27 +739,37 @@ function NativeCloudAssets.getPackStatus(asset)
 end
 
 function NativeCloudAssets.deleteAllCloudData()
+
 	for i, file in love.filesystem.getDirectoryItems("cdn") do
 		NativeCloudAssets.removeAsset(file)
 	end
+
 end
+
 -- NOTE : the game cashes the data in its settings folder as a fallback
+
 function createAudioFromAppData(asset, clipName)
+
     if downloads[asset] and downloads[asset].source then
         res.createAudio(downloads[asset].source, clipName, false, true)
         print(clipName .. " created!")
     end
+
 end
 
 --4.2.0
+
 function NativeCloudAssets.getAssetPath(asset)
+
     if downloads[asset] then
         return asset
     end
+
     return nil
 end
 
 -- connect to a dummy network, and check if there's any feedback
+
 function NativeCloudAssets.isInternetConnected()
 	local socket = require("socket")
     local tcp = socket.tcp()
@@ -725,6 +830,7 @@ function getHardwareModel()
 end
 
 --g_requestingInterstitial, g_interstitialReady
+
 function requestInterstitial()
 	return
 end
@@ -734,6 +840,7 @@ function showInterstitial()
 end
 
 --does not show up at all in luadec
+
 function updateThemeSprite(dt)
 	return
 end
@@ -772,12 +879,14 @@ setmetatable(g_iap_item_info, {
 	__index = function(self, k)
 		return getProductWithIapId(id)
 	end
+
 })
 
 
 --portals
 PortalObjectTeleporter = {}
 -- TODO : fix angles + collision detection
+
 function PortalObjectTeleporter:recalculateLinearVelocity()
 	local vx, vy = self.object.body:getLinearVelocity()
 	local speed = _G._G.math.sqrt(vx * vx + vy * vy)
@@ -816,6 +925,7 @@ function PortalObjectTeleporter:recalculateLinearVelocity()
 		}
 		
 		local newAngle = portalAngleDiff
+
 		if self.sourceAngle <= self.destAngle and angleDelta >= deltaTime then
 			newAngle = -newAngle
 		end
@@ -883,6 +993,7 @@ function PortalObjectTeleporter:new(object, x, y, angle, minSpeed, sourcePath, e
 end
 
 function PortalObjectTeleporter:update(dt)
+
 	if self.finished then
 		return false
 	end
@@ -900,6 +1011,7 @@ function PortalObjectTeleporter:update(dt)
 			local angleThreshold = _G._G.math.pi / 2 * dt
 			
 			if angleThreshold < velocityAngle then
+
 				if self.needsVelocityRecalc then
 					self:recalculateLinearVelocity()
 					self.needsVelocityRecalc = false
@@ -945,7 +1057,9 @@ function PortalObjectTeleporter:update(dt)
 					objectExitingThroughPortal(self.object.name)
 					return true
 				end
+
 			end
+
 		end
 		
 		self.needsVelocityRecalc = true
@@ -981,6 +1095,7 @@ end
 
 function PortalObjectTeleporter:playEffects(isEntry)
 	local index = 1
+
 	while index <= #self.effect do
 		local effect = self.effect[index]
 		
@@ -1007,11 +1122,14 @@ function PortalObjectTeleporter:playEffects(isEntry)
 				end
 				
 				local rotation = 0.0
+
 				if not effect.positionFromPortal then
 					rotation = self.destAngle	
+
 					if isEntry then
 						rotation = self.sourceAngle	
 					end
+
 				end
 				
 				x = x * physicsToWorld
@@ -1022,10 +1140,12 @@ function PortalObjectTeleporter:playEffects(isEntry)
 				local volume = effect.volume or 1.0
 				res.playAudio(assetName, volume, false, 0)
 			end
+
 		end
 
 		index = index + 1
 	end
+
 end
 
 function PortalObjectTeleporter:isComplete()
@@ -1115,6 +1235,7 @@ end
 
 
 --isn't actually necessary for the loading screen to work
+
 function setLoadingScreenActive(active)
 	return
 end
@@ -1150,6 +1271,7 @@ function WebView.new(x, y, height, width)
 		local onLinkClicked = function(view, url)
 			return _G.WebView.LOAD_PAGE_INTO_EXTERNAL_BROWSER
 		end
+
 		]]
 		return
 	end
@@ -1157,15 +1279,20 @@ function WebView.new(x, y, height, width)
 	function view:setOnPageLoadedCallback(callback)
 		--[[
 		local onPageLoaded = function(view, success, pageTitle)
+
 			if success and pageTitle == "Rovio News [hjsdu]" then
 				rovioNewsIsLoaded = true
+
 				if rovioNewsShowWhenLoaded then
 					hideAd()
 					view:show()
 					rovioNewsIsShown = true
 				end
+
 			end
+
 		end
+
 		]]
 		return
 	end

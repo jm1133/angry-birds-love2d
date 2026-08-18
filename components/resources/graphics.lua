@@ -12,11 +12,13 @@ cachedimgs = {} --individual sprites
 function getBGColor() --not used, but i found it in ghidra
 	return love.graphics.getBackgroundColor()
 end
+
 function setBGColor(r, g, b) --set the background color
 	love.graphics.setBackgroundColor(r / 255, g / 255, b / 255)
 end
 
 --quite literally used everywhere
+
 function setRenderState(x, y, xs, ys, angle, xp, yp, alpha)
 	love.graphics.origin()
 	if pivotDebug then love.graphics.translate(screenWidth - screenWidth * .75, screenHeight - screenHeight * .75) end
@@ -33,15 +35,18 @@ function setRenderState(x, y, xs, ys, angle, xp, yp, alpha)
 	if alpha then
 		setAlpha(alpha)
 	end
+
 end
 
 --frontend of drawsprite
+
 function res.drawSprite(a, b, ...)
 	if tonumber(b) then --sprite, x, y, etc.
 		drawSprite("", a, b, ...)
 	else
 		drawSprite(a, b, ...)
 	end
+
 end
 
 function res.drawCompoSprite(...)
@@ -73,6 +78,7 @@ function res.drawCompoSprite(...)
 		
 		for i, v in ipairs(image.items) do
 			local sprite = checkSprite(v.n)
+
 			if sprite and sprite.quad and sprite.spsh then
 				local w, h = width or sprite.width, height or sprite.height
 				local wm = w / sprite.width
@@ -97,8 +103,11 @@ function res.drawCompoSprite(...)
 					
 				love.graphics.pop()
 			end
+
 		end
+
 	end
+
 end
 
 function res.setClipRect(x1, y1, x2, y2)
@@ -115,18 +124,22 @@ end
 function res.getSpriteBounds(sheet, sprite)
 	if not sprite then sprite = sheet end
 	sprite = checkSprite(sprite)
+
 	if sprite then
 		return sprite.width, sprite.height
 	end
+
 	return 0, 0
 end
 
 function res.getSpritePivot(sheet, sprite)
 	if not sprite then sprite = sheet end
 	sprite = checkSprite(sprite)
+
 	if sprite then
 		return sprite.px or 0, sprite.py or 0
 	end
+
 	return 0, 0
 end
 
@@ -186,6 +199,7 @@ function drawSprite(sheet, sprite, x, y, vanchor, hanchor, width, height, angle)
 	elseif image and image.items then --composprite used in later versions
 		res.drawCompoSprite(sprite, x, y, vanchor, hanchor, width, height)
 	end
+
 end
 
 function drawSpriteTinted(sprite, x, y, vanchor, hanchor, r, g, b, a)
@@ -196,6 +210,7 @@ function drawSpriteTinted(sprite, x, y, vanchor, hanchor, r, g, b, a)
 end
 
 --TODO: i cannot get the color blending to be accurate to 5.1.0
+
 function drawSpriteColoured(sprite, x, y, scaleX, scaleY, r, g, b, a, darken)
 	love.graphics.push("all")
 	love.graphics.origin()
@@ -292,6 +307,7 @@ function drawLine2D(x0, y0, x1, y1, w, r, g, b, a)
 end
 
 --3.0.1
+
 function drawRubberband(x1, y1, x2, y2, width, sprite)
 	sprite = checkSprite(sprite)
 	if not sprite then return end
@@ -326,6 +342,7 @@ function drawSlingScopeNative(s_vx, s_vy, vertical_force)
 	s_vy = s_vy + worldgravity.y / physicsToWorld * spacing * offset
 
 	local verticalForce = (vertical_force / selectedBird.mass) / physicsToWorld
+
 	if vertical_force ~= 0 then
 		s_vy = s_vy - verticalForce * spacing / 2
 		s_vy = s_vy + verticalForce * spacing * offset
@@ -341,6 +358,7 @@ function drawSlingScopeNative(s_vx, s_vy, vertical_force)
 		love.graphics.scale(lerp(1, 0, (i - 1 + offset) / amount))
 		s_vy = s_vy + worldgravity.y / physicsToWorld * spacing
 		-- apply extra impulse on the curve
+
 		if vertical_force ~= 0 then
 			s_vy = s_vy + verticalForce * spacing
 		end
@@ -353,10 +371,12 @@ function drawSlingScopeNative(s_vx, s_vy, vertical_force)
 
 		love.graphics.pop()
 	end
+
 	love.graphics.pop()
 end
 
 --4.0.0
+
 function drawFullscreenRect(r, g, b, a)
 	love.graphics.push("all")
 	love.graphics.origin()
@@ -371,13 +391,17 @@ pngMapping = {}
 
 function findSpriteByPNG(name)
 	local map = pngMapping[name]
+
 	if map then
 		local sheet = loadedSheets[map]
+
 		if sheet then
 			local sprite = sheet.sprites[1]
 			return sprite
 		end
+
 	end
+
 end
 
 local function releaseSheet(sheet, usecomposprites)
@@ -391,13 +415,16 @@ local function releaseSheet(sheet, usecomposprites)
 		if sprite == cache[sprite.name] then --should work?
 			cache[sprite.name] = nil
 		end
+
 	end
 
 	for i, v in pairs(pngMapping) do
+
 		if v == sheet then
 			pngMapping[i] = nil
 			break
 		end
+
 	end
 	
 	if lsheet.zip then
@@ -428,6 +455,7 @@ local function loadSheet(sheet, usecomposprites)
 	local info
 
 	--TODO: another file.. ..
+
 	if endsWith(newname, ".dat") then
 		info = getDatInfo(data, newname, "SPRT")
 	elseif endsWith(newname, ".json") then
@@ -452,6 +480,7 @@ local function loadSheet(sheet, usecomposprites)
 					stream = sprite.stream,
 				}
 			end
+
 			--print(jsondata.meta.app, jsondata.meta.image)
 		else
 			info = {compos = {}}
@@ -475,13 +504,17 @@ local function loadSheet(sheet, usecomposprites)
 						n = sprite.name
 					})
 				end
+
 			end
+
 			--error(newname)
 			--print("sheet", jsondata.meta.sheet)
 		end
+
 	end
 
 	if usecomposprites and info.compos then
+
 		for i, v in pairs(info.compos) do
 			--calculate the bounds here
 			local composprite = {items = v}
@@ -492,6 +525,7 @@ local function loadSheet(sheet, usecomposprites)
 			
 			for ii, vv in ipairs(v) do
 				local sprite = cachedimgs[vv.n]
+
 				if sprite then
 					local sx0, sx1 = vv.x - sprite.px, vv.x + sprite.width - sprite.px
 					local sy0, sy1 = vv.y - sprite.py, vv.y + sprite.height - sprite.py
@@ -508,6 +542,7 @@ local function loadSheet(sheet, usecomposprites)
 					width = _G._G.math.abs(x1 - x0)
 					height = _G._G.math.abs(y1 - y0)
 				end
+
 			end
 			
 			composprite.width, composprite.height = width, height
@@ -515,6 +550,7 @@ local function loadSheet(sheet, usecomposprites)
 
 			cachedcs[i] = composprite
 		end
+
 	elseif not usecomposprites and info.sprites and info.filename then
 		local filename = table.concat(paths, "/", 1, #paths - 1).."/"..info.filename
 		local extensionlength = 4
@@ -542,15 +578,18 @@ local function loadSheet(sheet, usecomposprites)
 
 				--and append the real filename to it before passing in the real path
 				local newname, paths = findCaseInsensitive(zip.."/"..og_datapath.."/"..parentDir.."/"..info.filename)
+
 				if not newname then
 					newname, paths = findCaseInsensitive(zip.."/"..info.filename)
 				end
+
 				filename = newname
 			else
 				--or it didn't even work
 				print("loadSheet: could not unzip "..zip)
 				return
 			end
+
 		end
 
 		local zipped7 = not checkDirectory(filename) and (checkDirectory(filename..".7z") and ".7z")
@@ -578,7 +617,9 @@ local function loadSheet(sheet, usecomposprites)
 				local imagedata = love.image.newImageData(w, h, "rgba4", rawdata)
 				lsheet.sheet = love.graphics.newImage(imagedata)
 			end
+
 		elseif endsWith(filename, ".webp") then
+
 			if not haswebp then
 				extensionlength = 5 + 4 --.webp + .png
 				filename = filename..".png"
@@ -589,6 +630,7 @@ local function loadSheet(sheet, usecomposprites)
 				local src = love.filesystem.read(filename)
 				lsheet.sheet = love.graphics.newImage(webp.loadImage(src, src:len()))
 			end
+
 		elseif endsWith(filename, ".stream") or endsWith(filename, ".stream.7z") then
 			--TODO: another file
 			--the json files basically handle everything for us at least for seasons
@@ -611,6 +653,7 @@ local function loadSheet(sheet, usecomposprites)
 				-- print(i)
 				sprite.sheet = love.graphics.newImage(love.image.newImageData(sprite.stream.width, sprite.stream.height, format, src:sub(sprite.stream.position + 1 + 40, sprite.stream.position + 40 + sprite.stream.length)))
 			end
+
 		else
 			lsheet.sheet = love.graphics.newImage(filename)
 		end
@@ -631,7 +674,9 @@ local function loadSheet(sheet, usecomposprites)
 			
 			table.insert(lsheet.sprites, cachedimgs[i])
 		end
+
 	end
+
 end
 
 function loadDATFileToTable(sheet, table)

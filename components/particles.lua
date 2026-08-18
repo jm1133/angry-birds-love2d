@@ -2,6 +2,7 @@
 local SCREEN = {}
 local WORLD = {}
 --menu is not used ingame
+
 function drawParticlesNative(menu)
 	if not particles then return end
 	
@@ -12,6 +13,7 @@ function drawParticlesNative(menu)
 	local activeParticles = menu and SCREEN or WORLD
 	
 	for _, p in _G.pairs(activeParticles) do
+
 		if menu then
 			setRenderState(0, 0, p.scale, p.scale, p.angle, p.spritePivotX, p.spritePivotY)
 			_G.res.drawSprite(p.sprite, p.x / p.scale, p.y / p.scale)
@@ -19,7 +21,9 @@ function drawParticlesNative(menu)
 			setRenderState(-screenLeft / p.scale, -screenTop / p.scale, scale * p.scale, scale * p.scale, p.angle, p.spritePivotX, p.spritePivotY)
 			_G.res.drawSprite(p.sprite, p.x / p.scale, p.y / p.scale)
 		end
+
 	end
+
 end
 
 function loadParticleFile(name) -- check if this is correct?
@@ -46,6 +50,7 @@ function drawLevelParticlesNative(layer)
 end
 
 local updateParticles = function(dt, activeParticles)
+
 	for i = #activeParticles, 1, -1 do
 		local p = activeParticles[i]
 
@@ -73,9 +78,11 @@ local updateParticles = function(dt, activeParticles)
 			p.angle = p.angle + p.angleVel * dt
 			
 			local t = p.time / p.lifeTime
+
 			if p.scaleBackAndForth then
 				t = 1.0 - _G._G.math.abs(1.0 - 2.0 * t)
 			end
+
 			p.scale = p.scaleBegin + (p.scaleEnd - p.scaleBegin) * t
 			
 			if p.lifeTimeAnimation then
@@ -91,9 +98,13 @@ local updateParticles = function(dt, activeParticles)
 					p.spritePivotX, p.spritePivotY = res.getSpritePivot(p.sheet, p.sprite)
 					p.oldSprite = p.sprite
 				end
+
 			end
+
 		end
+
 	end
+
 end
 
 function updateScreenParticlesNative(dt)
@@ -122,6 +133,7 @@ local function addParticles(type, amount, x, y, w, h, angle, ignoreLimits, menu)
 	end
 
 	for i = 1, amount, 1 do
+
 		if particleAmount < hardLimitSimultaneousParticles or ignoreLimits then
 			particleAmount = particleAmount + 1
 			local p = { }
@@ -129,7 +141,9 @@ local function addParticles(type, amount, x, y, w, h, angle, ignoreLimits, menu)
 			p.y = y + (_G._G._G.math.random(0, h) - 0.5*h ) -- * sin(angle)
 			local mivx,mavx = pt.minVel or 0, pt.maxVel or 0
 			local mivy,mavy = pt.minVel or 0, pt.maxVel or 0
+
 			if pt.emitter_box then
+
 				if pt.emitter_box.minVelX then
 					mivx, mavx, mivy, mavy = pt.emitter_box.minVelX,pt.emitter_box.maxVelX,
 											pt.emitter_box.minVelY,pt.emitter_box.maxVelY
@@ -137,9 +151,11 @@ local function addParticles(type, amount, x, y, w, h, angle, ignoreLimits, menu)
 					mivx, mavx, mivy, mavy = pt.emitter_box.minVel,pt.emitter_box.maxVel,
 											pt.emitter_box.minVel,pt.emitter_box.maxVel
 				end
+
 			end
 			
 			local circle = ((pt.minAngleEmitter ~= nil and pt.maxAngleEmitter ~= nil) and 1) or (pt.emitter_circle ~= nil and 2) or nil
+
 			if circle then
 				local emitter_circle = pt.emitter_circle or pt
 				local min, max = emitter_circle.minAngleEmitter or -180, emitter_circle.maxAngleEmitter or 180
@@ -163,11 +179,13 @@ p.y = y
 			end
 			
 			-- i don't know if this is applied elsewhere
+
 			if type == "theme15rain" then			
 				p.angle = _G._G.math.atan2(p.yVel, p.xVel)
 			end
 			
 			-- BUGFIX : fixed RNG adding unintended extra values to the output
+
 			local function randomize(min, max)
 				min = min or 0
 max = max or 0
@@ -191,6 +209,7 @@ max = max or 0
 			if p.lifeTimeAnimation then
 				p.sprite = pt.sprites[1]
 			end
+
 			p.oldSprite = p.sprite
 			p.spritePivotX, p.spritePivotY = _G.res.getSpritePivot(p.sheet, p.sprite)
 
@@ -199,8 +218,11 @@ max = max or 0
 			else
 				_G.table.insert(WORLD, p)
 			end
+
 		end
+
 	end
+
 end
 
 local function addParticles2(type, amount, x, y, w, h, angle, ignoreLimits, menu) --different parameters
@@ -221,11 +243,15 @@ local function clear(kind)
 		["ingame"] = WORLD
 	}
 	local tableToClear = particleTables[kind] or kind
+
 	if tableToClear then
+
 		for k in ipairs(tableToClear) do
 			tableToClear[k] = nil
 		end
+
 	end
+
 end
 
 local function clearMenuParticlesNative()
@@ -241,6 +267,7 @@ local function addLevelParticles(...)
 end
 
 --absw
+
 local function native_addParticlesWithMode(particle)
 	return
 end
@@ -267,4 +294,5 @@ getParticles = {
     __index = function(self, i)
         return lookup[i] or particleTable.particles[i]
     end
+
 }

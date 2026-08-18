@@ -56,6 +56,7 @@ function os.time(t)
     if t then return realTime(t) end
     return 1291161600 + fakeTime -- dec 1st, 2010
 end
+
 ]]
 
 local status, timeToNext, today, error
@@ -73,6 +74,7 @@ function loadLevelFile(levelName, dateString)
     })
 	
 	local seconds_to_open = os.difftime(unlockTime, date)
+
 	if seconds_to_open <= 0 then
 		local level = levelName:match("([^/]+)$")
 		status = highscores[level] and 2 or 3

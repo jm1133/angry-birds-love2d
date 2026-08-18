@@ -2,6 +2,7 @@
 
 function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, color)
 	local r, g, b, a = 1.0, 1.0, 1.0, 1.0
+
 	if color then
 		r = color.red or r
 		g = color.green or g
@@ -94,6 +95,7 @@ function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, colo
 	local startXTopMiddle = x1 + twTopLeft - pxTopLeft
 	local stopXTopMiddle = x2 - pxTopRight
 	local y1Top = y1 - pyTopMiddle
+
 	if stopXTopMiddle < startXTopMiddle then
 		stopXTopMiddle = startXTopMiddle 
 	end
@@ -101,6 +103,7 @@ function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, colo
 	local startXBottomMiddle = x1 + twBottomLeft - pxBottomLeft
 	local stopXBottomMiddle = x2 - pxBottomRight
 	local y1Bottom = y2 - pyBottomMiddle
+
 	if stopXBottomMiddle < startXBottomMiddle then
 		stopXBottomMiddle = startXBottomMiddle 
 	end
@@ -108,6 +111,7 @@ function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, colo
 	local startYMiddleLeft = y1 + thTopLeft - pyTopLeft
 	local stopYMiddleLeft = y2 - pyBottomLeft
 	local x1Left = x1 - pxMiddleLeft
+
 	if stopYMiddleLeft < startYMiddleLeft then
 		stopYMiddleLeft = startYMiddleLeft 
 	end
@@ -115,6 +119,7 @@ function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, colo
 	local startYMiddleRight = y1 + thTopRight - pyTopRight
 	local stopYMiddleRight = y2 - pyBottomRight
 	local x1Right = x2 - pxMiddleRight
+
 	if stopYMiddleRight < startYMiddleRight then
 		stopYMiddleRight = startYMiddleRight 
 	end
@@ -128,6 +133,7 @@ function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, colo
 	else -- left
 		xPivot = 0
 	end
+
 	if vAnchor == "VCENTER" then
 		yPivot = -height / 2
 	elseif vAnchor == "BOTTOM" then
@@ -149,9 +155,11 @@ function drawBoxNative(boxSprites, x1, y1, width, height, hAnchor, vAnchor, colo
 	_G.res.drawSprite(boxSprites.bottomRight, _G._G._G.math.floor(x2 + xPivot), _G._G._G.math.floor(y2 + yPivot))
 	
 	-- if color isn't defined then fill with center sprite
+
 	if color ~= nil then
 		drawRect(r, g, b, a, _G._G._G.math.floor(x1 + xPivot), _G._G._G.math.floor(y1 + yPivot), _G._G._G.math.floor(x2 + xPivot), _G._G._G.math.floor(y2 + yPivot), false)
 	else
 		_G.res.drawSprite(boxSprites.center, _G._G._G.math.floor(x1 + xPivot), _G._G._G.math.floor(y1 + yPivot), "TOP", "LEFT", _G._G._G.math.floor(width), _G._G._G.math.floor(height))
 	end
+
 end

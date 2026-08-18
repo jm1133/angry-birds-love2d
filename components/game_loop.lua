@@ -12,6 +12,7 @@ dmonitor = nil
 prevCursor = {x = 0, y = 0}
 
 function updateDisplayScale()
+
 	if autoScale > 0 then
 		local w, h = love.graphics.getDimensions()
 		displayScale = (_G._G.math.min(w, h) / autoScale)
@@ -19,7 +20,9 @@ function updateDisplayScale()
 		if displayScale >= .9 and displayScale <= 1.15 then --snap to 1 if close enough
 			displayScale = 1
 		end
+
 	end
+
 	love.graphics.scale(displayScale)
 	
 	screenWidth = _G._G.math.floor(love.graphics.getWidth() / displayScale)
@@ -27,6 +30,7 @@ function updateDisplayScale()
 end
 
 function updateMouse(dt)
+
 	if not joystick then
 		cursor.x, cursor.y = love.mouse.getPosition()
 		cursor.x = cursor.x / displayScale
@@ -40,11 +44,14 @@ function updateMouse(dt)
 end
 
 --restore particle functions
+
 function restoreParticles()
 	particles = particles or {}
+
 	if particles and not getmetatable(particles) then
 		setmetatable(particles, getParticles)
 	end
+
 end
 
 lgClear = love.graphics.clear
@@ -56,7 +63,9 @@ function love.graphics.clear(...)
 end
 
 function love.update(dt)
+
 	if love.window.hasFocus() then
+
 		if love.joystick then
 			local joysticks = love.joystick.getJoysticks()
 			joystick = joysticks[1]
@@ -69,25 +78,33 @@ function love.update(dt)
 			if gameResumed and not enableDebug then
 				gameResumed()
 			end
+
 		end
 
 		hasfocus = true
+
 		if love.graphics and love.graphics.isActive() then
 			love.graphics.origin()
 			lgClear(love.graphics.getBackgroundColor())
 		end
 		
 		if audiochannels then
+
 			for i, channel in ipairs(audiochannels) do
+
 				for ii, sound in ipairs(channel) do
 					local source = sound.source
+
 					if not source:isPlaying() then
 						source:release()
 
 						table.remove(channel, ii)
 					end
+
 				end
+
 			end
+
 		end
 		
 		updateDisplayScale()
@@ -106,14 +123,18 @@ function love.update(dt)
 		--proper multitouch support, at last
 		local mttouches = love.touch.getTouches()
 		table.clear(touches)
+
 		if #mttouches > 0 then
+
 			for i, v in ipairs(mttouches) do
 				local x, y = love.touch.getPosition(v)
 				touches[i] = {x = x / displayScale, y = y / displayScale, p = love.touch.getPressure(v)} --pressure sensitivity for the two touchscreens that support it
 			end
+
 		elseif keyHold["LBUTTON"] then
 			touches[1] = {x = cursor.x, y = cursor.y}
 		end
+
 		touchcount = #touches
 		
 		--update pinch to zoom
@@ -133,6 +154,7 @@ function love.update(dt)
 		dt2 = speedUpPre(_G._G.math.min(dt, 1/30) * (debugOpen and 0.2 or 1) * timeScale)
 
 		local kp, kr, kh, cw = keyPressed, keyReleased, keyHold, cursor.wheel
+
 		if openPopups[1] or debugOpen or fmOpen then
 			keyPressed, keyReleased, keyHold = {}, {}, {}
 			cursor.wheel = 0
@@ -153,6 +175,7 @@ function love.update(dt)
 				res.useFont("FONT_BASIC")
 				res.drawString("", "update: "..(_G._G.math.floor((t2 - t1) * 1000 * 10) / 10).." ms", 10, 10)
 			end
+
 		end
 
 		--try it out, just for fun
@@ -162,6 +185,7 @@ function love.update(dt)
 			fpsDebug(dt)
 			drawCollisionsList()
 		end
+
 		if speedUpPost then speedUpPost() end
 
 		drawParticlesNative(true)
@@ -172,15 +196,18 @@ function love.update(dt)
 			local i = type(dmonitor) == "string" and dmonitor or (type(dmonitor)=="table" and dmonitor[2] and dmonitor[1].."."..dmonitor[2])
 			res.useFont(fontBasic or "FONT_BASIC")
 			setRenderState(0, 0, 1, 1)
+
 			if v ~= nil then
 				res.drawString("", i..": "..tostring(v), 50, 100)
 			else
 				res.drawString("", "Invalid debug monitor", 50, 100)
 			end
+
 		end
 		
 		keyPressed, keyReleased, keyHold, cursor.wheel = kp, kr, kh, cw
 		-- temporary fix for rio/space
+
 		if sm and sm.currentScene == sm.scenes.pause then
 			setPhysicsEnabled(false)
 			g_gamePaused = true
@@ -189,6 +216,7 @@ function love.update(dt)
 		updatePhysics(dt)
 
 		zoomLevel = lerp(zoomLevel, wantedZoomLevel, dt * 8)
+
 		if currentGameMode ~= updateGame and currentGameMode ~= updateEditor then
 			wantedZoomLevel = 0
 		end
@@ -214,16 +242,19 @@ function love.update(dt)
 			if CUI.currentTextboxState.timer <= 0 then
 				CUI.currentTextboxState = nil
 			end
+
 		end
 
 		if not (debugPaused and dt2 == 0) then
 			-- love.graphics.present()
 		end
+
 	elseif hasfocus then
 		hasfocus = false
 		pausedaudios = love.audio.pause()
 
 		--don't keep saving settings.lua every time you defocus
+
 		if gamePaused and not enableDebug then
 			gamePaused()
 		end
@@ -231,7 +262,9 @@ function love.update(dt)
 		if not debugPaused then
 			love.graphics.present()
 		end
+
 	end
+
 	-- if not cursor.wheelTriggered then
 		cursor.wheel = 0
 	-- end
@@ -243,12 +276,15 @@ function love.update(dt)
 end
 
 function love.resize(width, height)
+
 	if resolutionChanged then
 		resolutionChanged(width, height)
 	end
+
 end
 
 --set dt to 0 resizing
+
 if love.event.setModalDrawCallback then
 	--love.event.setModalDrawCallback(function() loveUpdate(true) if clearLuaForceFunctions then clearLuaForceFunctions() end end)
 end

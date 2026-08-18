@@ -62,6 +62,7 @@ CUI.BGColor_Blue = {24 / 255, 50 / 255, 75 / 255}
 CUI.currentTextboxState = nil
 
 --unused right now
+
 function CUI.State()
 	local state = {}
 	setmetatable(state, state)
@@ -75,6 +76,7 @@ function CUI.State()
 end
 
 --scroll bar indicator
+
 function CUI.Scrollbar(x, y, sc_w, h, scroll, maxscroll, contentHeight)
 	local percent = scroll / maxscroll
 	-- print(maxscroll)
@@ -88,6 +90,7 @@ function CUI.Scrollbar(x, y, sc_w, h, scroll, maxscroll, contentHeight)
 end
 
 --recommended scrollbar settings
+
 function CUI.ScrollbarFromScrollState(scroll, x, y, h, contentHeight)
 	CUI.Scrollbar(
 		x,
@@ -122,6 +125,7 @@ function CUI.Textbox(state, x, y, w, h)
 	end
 	
 	local scroll, disable = state.scroll.scroll or 0, false
+
 	if hovering and state.multiline then
 		scroll, disable = CUI.HandleScroll(state.scroll, love.timer.getDelta())
 	end
@@ -142,6 +146,7 @@ function CUI.Textbox(state, x, y, w, h)
 			if cy < lines then
 				local maxtext = ""
 				local amount = 0
+
 				for p, c in utf8.codes(line) do
 					local char = utf8.char(c)
 					amount = amount + 1
@@ -150,19 +155,23 @@ function CUI.Textbox(state, x, y, w, h)
 					if font:getWidth(maxtext) --[[- font:getWidth(char) * 0]] >= cx then
 						break
 					end
+
 					state.cursor = amount + len
 				end
+
 				break
 			end
 			
 			len = len + utf8.len(line) + 1
 		end
+
 	elseif CUI.currentTextboxState == state and keyPressed.LBUTTON and not hovering then
 		CUI.currentTextboxState = nil
 	end
 
 	if CUI.currentTextboxState == state then
 		--move the selection left/right
+
 		if keyPressed.LEFT or keyPressed.RIGHT and not (keyPressed.LEFT and keyPressed.RIGHT) then
 			local direction = (keyPressed.RIGHT and 1 or -1)
 			res.playAudio("menu_select", 1, false)
@@ -191,6 +200,7 @@ function CUI.Textbox(state, x, y, w, h)
 		if keyPressed.TAB then
 			CUI.OnTextInput("\t")
 		end
+
 	end
 	
 	love.graphics.setColor(.5, .5, .5, .5)
@@ -210,11 +220,13 @@ function CUI.Textbox(state, x, y, w, h)
 	local fontheight = font:getHeight() - .5
 	
 	--draw the mutliline view if applicable
+
 	if state.multiline then
 		love.graphics.rectangle("fill", x, y - scroll, lineswidth, h, 10, 10)
 	end
 	
 	--draw the placeholder if applicable
+
 	if state.value == "" then
 		love.graphics.setColor(1, 1, 1, .5)
 		res.drawString("", state.placeholder, textx + 5, y)
@@ -229,7 +241,9 @@ function CUI.Textbox(state, x, y, w, h)
 		local final_y = y + lines * fontheight
 		
 		--only draw the line if it is below the top
+
 		if final_y >= y - scroll - fontheight then
+
 			if state.multiline then
 				res.drawString("", lines + 1, x + 5, final_y) --line number
 			end
@@ -253,6 +267,7 @@ function CUI.Textbox(state, x, y, w, h)
 	love.graphics.pop()
 
 	--scroll bar indicator
+
 	if state.multiline then
 		local f_padding = 50
 		CUI.ScrollbarFromScrollState(state.scroll, --scroll state
@@ -304,6 +319,7 @@ end
 
 --global scrolling system, it's become too complicated to include in everything separately
 --scroll, disable = CUI.HandleScroll(so.scroll, dt)
+
 function CUI.HandleScroll(state, dt)
 	state.scroll = state.scroll or 0
 	state.dest = state.dest or 0
@@ -345,6 +361,7 @@ function CUI.HandleScroll(state, dt)
 			state.scroll = state.scroll + delta
 			
 			--windows can report 0 for a few frames after releasing touch, use a timeout to mitigate that
+
 			if delta ~= 0 then
 				state.touch_scrollVelocity = delta
 				state.touch_scrollVelocityTimeout = .2
@@ -354,8 +371,11 @@ function CUI.HandleScroll(state, dt)
 				if state.touch_scrollVelocityTimeout == 0 then
 					state.touch_scrollVelocity = 0
 				end
+
 			end
+
 		end
+
 		--print(state.touch_scrollVelocity)
 		
 		state.touch_curscroll = state.touch_curscroll or 0
@@ -363,6 +383,7 @@ function CUI.HandleScroll(state, dt)
 		state.touch_maxscroll = state.touch_maxscroll or 0
 		state.touch_maxscroll = _G._G.math.max(state.touch_maxscroll, _G._G.math.abs(state.touch_curscroll))
 	else
+
 		if state.touch_scrolling then
 			--print("final "..state.touch_scrollVelocity)
 			--fling it based on its last velocity
@@ -382,6 +403,7 @@ function CUI.HandleScroll(state, dt)
 	local wpeed = dt * 24000
 	local maxspeed = 200000 --00
 	state.velocity_y = state.velocity_y - sign(state.velocity_y) * wspeed
+
 	if _G._G.math.abs(state.velocity_y) < wspeed then
 		state.velocity_y = 0
 	elseif _G._G.math.abs(state.velocity_y) > maxspeed then
@@ -408,6 +430,7 @@ function CUI.HandleScroll(state, dt)
 			state.overscrollPosition = state.scroll
 			state.overscrollDest = state.scroll > 0 and 0 or state.maxscroll
 		end
+
 	end
 	
 	if state.overscroll > 0 then
@@ -421,6 +444,7 @@ function CUI.HandleScroll(state, dt)
 		else
 			state.overscroll = 0
 		end
+
 	end
 	
 	--shortcut
@@ -428,6 +452,7 @@ function CUI.HandleScroll(state, dt)
 end
 
 function CUI.OnTextInput(key)
+
 	if CUI.currentTextboxState then
 		local state = CUI.currentTextboxState
 		local nextval = string.insert(state.value, key, state.cursor)
@@ -440,6 +465,7 @@ function CUI.OnTextInput(key)
 		state.cursor = state.cursor + 1
 		state.cursorBlink = 0
 	end
+
 end
 
 function CUI.Checkbox(state, x, y, w, h, label)
@@ -452,6 +478,7 @@ function CUI.Checkbox(state, x, y, w, h, label)
 	
 	love.graphics.translate(x + w / 2, y + h / 2)
 	love.graphics.scale(.4)
+
 	if state.value then
 		CUI.DrawIcon("check")
 	end
@@ -461,9 +488,11 @@ function CUI.Checkbox(state, x, y, w, h, label)
 	if label then
 		res.drawString("", label, x + w + 10, y + h / 2, "VCENTER")
 	end
+
 end
 
 function CUI.DrawIcon(icon)
+
 	if icon == "check" then
 		love.graphics.line(-40, 0, -15, 25, 35, -25)
 	elseif icon == "cross" then
@@ -472,6 +501,7 @@ function CUI.DrawIcon(icon)
 	elseif icon == "left" then
 		love.graphics.line(10, 25, -15, 0, 10, -25)
 	end
+
 end
 
 function CUI.DrawWrappedString(group, text, x, y, w, aligny, alignx)
@@ -489,12 +519,14 @@ function drawDebugButton(sprite, x, y, w, h, scale, call, enabled, sound) --TODO
 	local w,h = image and image.width or w or 100, image and image.height or h or 100
 
 	local s = 1
+
 	do
 		local w, h = love.graphics.transformPoint((w + x) / displayScale, (h + y) / displayScale)
 		local x, y = love.graphics.transformPoint(x / displayScale, y / displayScale)
 		w, h = w - x, h - y
 		
 		if enabled and checkBounds(x - w/2, y - h/2, w * scale, h * scale, cursor.x, cursor.y) then
+
 			if keyHold["LBUTTON"] then
 				s = .9
 			else
@@ -503,11 +535,15 @@ function drawDebugButton(sprite, x, y, w, h, scale, call, enabled, sound) --TODO
 
 			if keyReleased["LBUTTON"] then
 				res.playAudio(sound or "menu_confirm", 1, false)
+
 				if call then
 					call()
 				end
+
 			end
+
 		end
+
 	end
 
 	love.graphics.translate(x, y)
@@ -519,12 +555,14 @@ function drawDebugButton(sprite, x, y, w, h, scale, call, enabled, sound) --TODO
 	end
 
 	if sprite then
+
 		if not image then
 			love.graphics.push("all")
 			love.graphics.setColor(table.unpack(CUI.BGColor_Blue))
 			love.graphics.circle("fill", 0, 0, w/2)
 			love.graphics.pop()
 			love.graphics.circle("line", 0, 0, w/2)
+
 			if sprite == "TUTORIAL_OK" then
 				CUI.DrawIcon("check")
 			elseif sprite == "MENU_NO" then
@@ -532,9 +570,11 @@ function drawDebugButton(sprite, x, y, w, h, scale, call, enabled, sound) --TODO
 			elseif sprite == "BUTTON_ARROW_LEFT" then
 				CUI.DrawIcon("left")
 			end
+
 		else
 			res.drawSprite(sprite, 0, 0)
 		end
+
 	elseif sprite ~= false then
 		love.graphics.rectangle("line", -w / 2, -h / 2, w, h, 20)
 	end
@@ -544,6 +584,7 @@ end
 
 function drawDebugText(text, x, y, align, font, w)
 	text = tostring(text)
+
 	if w then
 		clipText(group, text, w)
 		text = clippedText and table.concat(clippedText.lines, "\n") or text
@@ -559,6 +600,7 @@ function drawDebugText(text, x, y, align, font, w)
 	if w then
 		return clippedText and clippedText.widestLine, res.getStringHeight(text)
 	end
+
 end
 
 function updatePopup()
@@ -566,6 +608,7 @@ function updatePopup()
 	local dt = love.timer.getDelta()
 
 	if popup then
+
 		local function update()
 			love.graphics.origin()
 			popup.anim = popup.anim or 0
@@ -591,6 +634,7 @@ function updatePopup()
 			popup.scroll.height = screenHeight
 			popup.scroll.contentHeight = h
 			local enableScroll = popup.scroll.height < popup.scroll.contentHeight + 100 --hack
+
 			if enableScroll then
 				--y = y + 150
 				y = 0 + 50
@@ -615,20 +659,25 @@ function updatePopup()
 			popup.h = theight
 			
 			local function close(len)
+
 				if not popup.closing then
 					popup.closing = true
 
 					--hack
+
 					if #openPopups ~= len then
 						popup.closing = false
 						table.remove(openPopups, #openPopups - len + 1)
 					end
+
 				end
+
 			end
 
 			local btns = #popup.buttons
 			local sx = w / (btns + 1) --start x
 			local len = #openPopups
+
 			if popup.extra and popup.extra(x + 50, y + 100 + theight, w - 50 - 50, h - 50 - 80 - theight, popup) then
 				close(len)
 			end
@@ -636,13 +685,16 @@ function updatePopup()
 			for i,v in ipairs(popup.buttons) do
 				drawDebugButton(v.sprite, ox + (i - (btns + 1) / 2) * sx, y + h, nil, nil, 1, function()
 					local len = #openPopups
+
 					if v.callback and v.callback() then
 						close(len)
 					end
+
 				end, true, v.sound or "menu_confirm")
 			end
 
 			--i lost my number one status
+
 			if popup ~= openPopups[1] then
 				popup.anim = 0
 			end
@@ -650,6 +702,7 @@ function updatePopup()
 			love.graphics.pop()
 
 			--scroll bar indicator
+
 			if enableScroll then
 				local f_padding = 50
 				CUI.ScrollbarFromScrollState(popup.scroll, --scroll state
@@ -662,20 +715,27 @@ function updatePopup()
 			if popup.closing and popup.anim <= 0 then
 				table.remove(openPopups, 1)
 			end
+
 		end
 
 		if popup.pause then
+
 			while popup and popup.pause do
 				--[[local ]]dt = love.timer and love.timer.step() or 0
 				love.event.pump()
+
 				for name, a,b,c,d,e,f,g,h in love.event.poll() do
+
 					if name == "quit" then
+
 						if c or not love.quit or not love.quit() then
 							-- return a or 0, b
 							openPopups = {}
 							break
 						end
+
 					end
+
 					love.handlers[name](a,b,c,d,e,f,g,h)
 				end
 
@@ -687,8 +747,11 @@ function updatePopup()
 
 				popup = openPopups[1]
 			end
+
 		else
 			update()
 		end
+
 	end
+
 end

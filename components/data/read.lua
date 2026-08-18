@@ -1,6 +1,7 @@
 --main function for reading dat files
 
 pos = 0
+
 function getDatInfo(fileData, fn, fallback)
 	assert(fileData ~= nil, "DAT is empty (file: "..tostring(fn)..")")
 
@@ -9,6 +10,7 @@ function getDatInfo(fileData, fn, fallback)
 	local version, format = 0, ""
 	-- assert(readString(fileData,pos,4) == "KA3D", "Wrong DAT format (file: "..tostring(fn)..")")
 	local head = readString(fileData, pos, 4)
+
 	if head == "KA3D" or head == "RVIO" then
 		version = readInt(fileData, 17)
 

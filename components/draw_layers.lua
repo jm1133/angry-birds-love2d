@@ -5,12 +5,15 @@ local trajectory
 
 themeSpriteObjects = {}
 --[[
+
 function createThemeSprite(name, sprite, x, y, speedX, scaleX, scaleY, angle, layerNumber)
 	themeSpriteObjects[name] = {sprite = sprite, x = x, y = y, speedX = speedX, scaleX = scaleX, scaleY = scaleY, angle = angle, layerNumber = layerNumber}
 end
+
 ]]
 
 function createThemeSprite(name, sprite, x, y, scaleX, scaleY, angle, layerNumber, angleVel, horFlip)
+
 	if horFlip ~= nil then
 		themeSpriteObjects[name] = {
 			sprite = sprite,
@@ -35,6 +38,7 @@ function createThemeSprite(name, sprite, x, y, scaleX, scaleY, angle, layerNumbe
 			layerNumber = angleVel,
 		}
 	end
+
 end
 
 function removeThemeSprite(name, layerNumber)
@@ -42,9 +46,11 @@ function removeThemeSprite(name, layerNumber)
 end
 
 function modifyThemeSprite(name, x, y, scaleX, scaleY, angle, layerNumber)
+
 	if not themeSpriteObjects[name] then
 		return
 	end
+
 	themeSpriteObjects[name].x = x
 	themeSpriteObjects[name].y = y
 	themeSpriteObjects[name].scaleX = scaleX
@@ -91,6 +97,7 @@ end
 --[4] = scale
 --[5] = looping
 --[6] = position
+
 function drawLayer(layer, yoffset)
 	local sprite = layer[2]
 	local relativeSpeed = layer[3] or 1
@@ -117,6 +124,7 @@ function drawLayer(layer, yoffset)
 	local screenTop = renderTop - shakeY or screen.top
 
 	if w > 0 and wScale > 0.02 then --don't draw so many if the scale is too low
+
 		for x = -1, _G._G.math.floor(screenWidth / (w - px) / wScale) do
 			local pivotX = w * x + startX
 			local left = -screenLeft * relativeSpeed / relativeScale
@@ -141,8 +149,11 @@ function drawLayer(layer, yoffset)
 			if not (x ~= 0 and isLooping == false) then
 				res.drawSprite(sprite, 0, 0)
 			end
+
 		end
+
 	end
+
 end
 
 function drawThemeSprite(v, layer)
@@ -162,6 +173,7 @@ function drawThemeSprite(v, layer)
 	local ys = v.scaleY or v.scale.y
 
 	if w > 0 and wScale > 0.02 then --don't draw so many if the scale is too low
+
 		for x = -1, _G._G.math.floor(screenWidth / w / wScale) do
 			local pivotX = w * x
 			local left = (-screenLeft * relativeSpeed / relativeScale) % w
@@ -172,12 +184,16 @@ function drawThemeSprite(v, layer)
 			if not (x ~= 0 and isLooping == false) then
 				res.drawSprite(v.sprite, v.x * 16, v.y)
 			end
+
 		end
+
 	end
+
 end
 
 function drawBackgroundNative(highGFX)
 	local theme = blockTable.themes[currentTheme]
+
 	if not (theme and theme.bgLayers) then
 		return
 	end
@@ -187,16 +203,20 @@ function drawBackgroundNative(highGFX)
 	end
 
 	if highGFX ~= false then
+
 		for layernum, layer in ipairs(theme.bgLayers) do
 			--theme rect colors
 			love.graphics.push("all")
+
 			if layercolors[layernum - 1] then
 				local colors = layercolors[layernum - 1]
 				love.graphics.setColor(colors)
+
 				if layer.rect then
 					local a = colors[4] or layer.rect.a
 					drawRect(layer.rect.r * a, layer.rect.g * a, layer.rect.b * a, a, 0, 0, screenWidth, screenHeight)
 				end
+
 			end
 
 			drawLayer(layer)
@@ -204,18 +224,24 @@ function drawBackgroundNative(highGFX)
 			love.graphics.pop()
 
 			for k, object in pairs(themeSpriteObjects) do
+
 				if object.layerNumber == layernum then
 					-- setRenderState(-screen.left - (cameraShakeX or 0), -screen.top - (cameraShakeY or 0), worldScale, worldScale, 0, 0, v.angle)
 					-- res.drawSprite(v.sprite, v.x, 0)
 					drawThemeSprite(object, theme.bgLayers[layernum + 1] or layer)
 				end
+
 			end
+
 		end
+
 	end
+
 end
 
 function drawForegroundNative()
 	local theme = blockTable.themes[currentTheme]
+
 	if not (theme and theme.fgLayers) then
 		return
 	end
@@ -231,17 +257,23 @@ function drawForegroundNative()
 	local ground_num = 1
 
 	--hack(?) for bad piggies
+
 	if theme.effects then
+
 		for i, v in ipairs(theme.effects) do
+
 			if v.type == "Waves" then
 				--check that all sprites are valid?
 				ground_num = v.params.water_layer.index
 				break
 			end
+
 		end
+
 	end
 
 	for layernum, layer in ipairs(fgLayers) do
+
 		if layernum == ground_num then
 			local _, ground_h = res.getSpriteBounds(fgLayers[ground_num][1], fgLayers[ground_num][2])
 			local _, ground_py = res.getSpritePivot(fgLayers[ground_num][1], fgLayers[ground_num][2])
@@ -266,6 +298,7 @@ function drawForegroundNative()
 
 		drawLayer(layer, yoffsets[layernum - 1])
 	end
+
 end
 
 local textureShader = love.graphics.newShader([[
@@ -294,17 +327,23 @@ function drawGameNative()
 
 	--trajectories (thanks again halo)
 	local trSprites = {}
+
 	for i = 1, 3 do
 		trSprites[i - 1] = "TRAIL_WHITE_" .. i
 	end
+
 	trSprites[#trSprites + 1] = "PARTICLE_SLINGDOT"
 
 	for _, tr in ipairs(trajectory) do
+
 		for _, v in ipairs(tr) do
+
 			for i, vv in ipairs(v) do
 				res.drawSprite(vv.s or trSprites[(i - 1) % 3], vv.x, vv.y)
 			end
+
 		end
+
 	end
 
 	drawSprites()
@@ -346,6 +385,7 @@ function drawSprites()
 			elseif shader ~= textureCache[obj.texture] then
 				love.graphics.setShader(textureCache[obj.texture])
 			end
+
 		end
 
 		love.graphics.push()
@@ -362,8 +402,11 @@ function drawSprites()
 
 		love.graphics.pop()
 	end
+
 end
+
 --[[
+
 function drawSprites()
 	local layers = { {}, {}, {}, {} }
 	
@@ -381,6 +424,7 @@ function drawSprites()
 	end
 	
 	-- sort sprites based on depth
+
 	for i = 1, #layers do
 		table.sort(layers[i], function(a, b)
 			return a.z_order < b.z_order
@@ -388,7 +432,9 @@ function drawSprites()
 	end
 	
 	-- draw object
+
 	for i = 1, #layers do
+
 		for k, v in ipairs(layers[i]) do
 			local obj = objects.world[v.name]
 			local texture = checkSprite(obj.texture) --or blockTable.themes[currentTheme].texture
@@ -422,16 +468,23 @@ function drawSprites()
 			else
 				drawObject(obj)
 			end
+
 		end
+
 	end
+
 end
+
 ]]
+
 function drawObject(v)
+
 	if v.visible == false then
 		return
 	end
 
 	local x, y
+
 	if v.position then
 		x, y = v.position.x, v.position.y
 	else
@@ -456,11 +509,13 @@ function drawObject(v)
 
 		res.drawSprite(v.objectSprite, x / scale.x, y / scale.y)
 	else
+
 		if v.isBackground then
 			scale = 2
 		end
 
 		love.graphics.scale(scale)
+
 		if v.flipx then
 			love.graphics.scale(-1, 1)
 		end
@@ -470,7 +525,9 @@ function drawObject(v)
 
 	drawangle = 0
 end
+
 --massive thanks halo
+
 function addToTrajectory(index, x, y)
 	table.insert(trajectory[#trajectory][index], { x = x, y = y })
 end
@@ -481,9 +538,11 @@ end
 
 function startNewTrajectory()
 	table.insert(trajectory, { {}, {}, {} })
+
 	if #trajectory > 2 then
 		table.remove(trajectory, 1)
 	end
+
 end
 
 function resetTrajectory()

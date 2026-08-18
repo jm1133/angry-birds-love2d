@@ -34,10 +34,14 @@ accurateAudioSpeed = {on = false, _hz = 0}
 
 worldgravity = {x = 0, y = 20}
 gravity = setmetatable({}, {__newindex = function(_, i, v)
+
 	if tonumber(v) then
 		rawset(worldgravity, i, v)
+
 		if physicsWorld then
 			physicsWorld:setGravity(worldgravity.x, worldgravity.y)
 		end
+
 	end
+
 end})

@@ -18,6 +18,7 @@ function solvePhysics(updateStep) -- WIP
 	if updateStep then
 		physicsWorld:update(timeStep, velocityIterations, positionIterations) -- where do we call this?
 	end	
+
 	--return timeStep, velocityIterations, positionIterations --ab uses 1/30, 10, 10
 end
 
@@ -32,6 +33,7 @@ local function getObjectCount()
 end
 
 function updatePhysics(dt)
+
 	if isPhysicsEnabled() ~= true then                 
 		return
 	end
@@ -39,12 +41,15 @@ function updatePhysics(dt)
 	if physicsSpeedFactor ~= physicsTimeScale then -- nifty hack, should probably change it later
 		physicsTimeScale = physicsSpeedFactor
 	end
+
 	--[[ TODO : fix this
+
 	if LevelParticlesManager.initialized then
 		LevelParticlesManager.start()
 	else
 		LevelParticlesManager.firstFrame()
 	end
+
 	]]
 
 	if waterUpdate then waterUpdate() end
@@ -54,10 +59,12 @@ function updatePhysics(dt)
 	
 	for _, v in pairs(objects.world) do
 		local PHYSICS_TIMESTEP = 1/30
+
 		if v.friction or not v.gravityEnabled then
 			updateFriction(v, PHYSICS_TIMESTEP)
 			updateForceAdder(v, PHYSICS_TIMESTEP)
 		end
+
 	end
 	
 	for name, teleporter in pairs(activeTeleporters) do
@@ -71,7 +78,9 @@ function updatePhysics(dt)
 			if isComplete then
 				teleporter.finished = true
 			end
+
 		end
+
 	end
 
 	if applyForcesAtPhysicsStep then applyForcesAtPhysicsStep() end
@@ -91,7 +100,9 @@ function updatePhysics(dt)
 	local objIndex = 0
 	local rollingVolumes = {}
 	local cx, cy = cursorPhysics.x, cursorPhysics.y
+
 	for _, obj in pairs(objects.world) do
+
 		if obj.body and not obj.body:isDestroyed() and not obj.physicsDisabled then
 			obj.x, obj.y = obj.body:getPosition()
 			
@@ -106,6 +117,7 @@ function updatePhysics(dt)
 			end
 			
 			if obj.ignoreMotionCheck ~= true then
+
 				if velMagnitude >= 0.0005 then
 					hasMovingObjectsAboveTolerance = true
 				end
@@ -113,6 +125,7 @@ function updatePhysics(dt)
 				if velMagnitude >= 9.0 or angularVelocity >= 1.0 then
 					hasMovingObjects = true
 				end
+
 			end
 			
 			obj.angle = (obj.body:getAngle() + _G._G.math.pi) % (_G._G.math.pi * 2) - _G._G.math.pi
@@ -121,12 +134,15 @@ function updatePhysics(dt)
 			hasAwakeObjects = true
 			
 			local mat = blockTable.materials[getMaterial(obj.name)]
+
 			if obj.controllable ~= true and mat and obj.radius then
 				local sound = mat.rollingSound
+
 				if sound then
 					local volume = _G._G.math.min(1, _G._G.math.abs(angularVelocity) * obj.mass / 400.0 * obj.body:getInertia())
 					rollingVolumes[sound] = _G._G.math.max(rollingVolumes[sound] or 0, volume)
 				end
+
 			end
 			
 			local bounceThreshold = 0.01
@@ -151,6 +167,7 @@ function updatePhysics(dt)
 
 					obj.scale = { x = scaleX, y = scaleY }
 				end
+
 			end
 			
 			if selectObjectAnimation then
@@ -160,19 +177,25 @@ function updatePhysics(dt)
 			objIndex = objIndex + 1
 			
 			--grab objects
+
 			if not releaseBuild and keyHold.RBUTTON and checkObjectBounds(obj.x, obj.y, (obj.width or obj.radius) + 5, (obj.height or obj.radius) + 5, obj.angle, cx, cy) then
 				res.drawString("", obj.name, obj.x * 20, obj.y * 20 + 50)
 				obj.body:setLinearVelocity((cx - obj.x) * 4, (cy - obj.y) * 4)
 			end
+
 		end
+
 	end
 	
 	for _, joint in pairs(objects.joints) do
+
 		if not joint.joint:isDestroyed() then
 			local physicsJoint = joint.joint
 			local jointType = physicsJoint:getType()
+
 			if joint.backAndForth then
 				local angle
+
 				if jointType == "prismatic" then
 					angle = physicsJoint:getJointTranslation()
 				elseif jointType == "revolute" then
@@ -186,30 +209,40 @@ function updatePhysics(dt)
 					joint.direction = 1
 					physicsJoint:setMotorSpeed(joint.motorSpeed)
 				end
+
 			end
 			
 			if joint.destroyTimer then
 				joint.destroyTimer = joint.destroyTimer - dt
+
 				if joint.destroyTimer <= 0 then
 					destroyJoint(joint.name)
 				end
+
 			end
+
 		end
+
 	end
 	
 	for rollingSound, volume in pairs(rollingVolumes) do
+
 		if volume > 0 then
+
 			if not res.isAudioPlaying(rollingSound) then
 				res.playAudio(rollingSound, volume, true, 2)
 			else
 				cachedaudios[rollingSound]:setVolume(volume) -- make a standalone function for this?
 			end
+
 		else
 			res.stopAudio(rollingSound)
 		end
+
 	end
 
 	--ab aimbot
+
 	if not releaseBuild and cameraTargetObject then
 		local obj = cameraTargetObject
 		--_G.res.drawString("", _G.tostring(obj.xVel), obj.x * 20, obj.y * 20 + 50)
@@ -224,10 +257,13 @@ function updatePhysics(dt)
 			setVelocity(obj.name, x * 20, y * 20)
 			setRotation(obj.name, _G._G.math.atan2(obj.yVel or 0, obj.xVel or 1))
 		end
+
 	end
+
 end
 
 ---- SOLVE FUNCTION ----
+
 function WorldSolve(step)
 	step.dt = 1/60 * (physicsTimeScale or 1)
 	
@@ -266,9 +302,13 @@ function WorldSolve(step)
 					
 					body:setLinearVelocity(vx, vy)
 				end
+
 			end
+
 		end
+
 	end
+
 end
 
 function setMaxTranslation(translation)

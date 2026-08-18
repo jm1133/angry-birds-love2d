@@ -121,18 +121,23 @@ function loadGameFiles()
 	end
 
 	local accountId = RovioAccount and RovioAccount.profile.id or "0" -- TODO : add account support
-	
+
 	--load save data
 	if not disableSaving then
-		local settingsAccount = "settings_" .. accountId .. ".lua"
-		local highscoresAccount = "highscores_" .. accountId .. ".lua"
-		
-		if checkDirectory(settingsAccount) then
-			runLuaFile(settingsAccount, true)
-			runLuaFile(highscoresAccount, true)
+		local settingsFile = "settings.lua"
+		local highscoresFile = "highscores.lua"
+
+		if love.filesystem.getInfo(settingsFile, "file") then
+			print("Loading saved settings: " .. settingsFile)
+			runLuaFile(settingsFile, true)
 		else
-			runLuaFile("settings.lua", true)
-			runLuaFile("highscores.lua", true)
+			print("No saved settings found")
+			print("Save directory: " .. love.filesystem.getSaveDirectory())
+		end
+
+		if love.filesystem.getInfo(highscoresFile, "file") then
+			print("Loading saved highscores: " .. highscoresFile)
+			runLuaFile(highscoresFile, true)
 		end
 	end
 	

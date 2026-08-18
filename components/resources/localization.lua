@@ -4,11 +4,13 @@ locale = "en_EN"
 
 function res.getString(category, key) --return a string from localization
 	local group = textGroups[category]
+
 	if group and group[locale] then
 		return group[locale][key] or key
 	else
 		return key
 	end
+
 end
 
 function res.createTextGroupSet(texts)
@@ -22,6 +24,7 @@ function res.createTextGroupSet(texts)
 	
 	local info = getDatInfo(love.filesystem.read(path), path, "TEXT")
 	local filename = ""
+
 	for i, v in texts:gmatch("([^/]+)") do
 		filename = i
 	end

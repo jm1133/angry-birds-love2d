@@ -29,14 +29,17 @@ local statuses_new = {
 }
 
 function iapInitItemPurchase(callback) --1.7.0
+
 	if _G[callback] then
 		_G[callback](mightyEagleItemId, 1, 0) --status: 1=success, 2=failure (error code 2=canceled), 3=restored
 	else
 		print("Init purchase callback: "..tostring(callback).." not found")
 	end
+
 end
 
 --the core function for all iaps
+
 function iapBuyItem(id, callbackid, statuslist) --1.7.0
 	local callback = type(callbackid) == "function" and callbackid or _G[callbackid]
 	local statuslist = statuslist or statuses
@@ -59,6 +62,7 @@ function iapBuyItem(id, callbackid, statuslist) --1.7.0
 	else
 		print("Purchase callback: "..tostring(callbackid).." not found")
 	end
+
 end
 
 function iapGetItemCount()
@@ -66,6 +70,7 @@ function iapGetItemCount()
 end
 
 --TODO: er
+
 function iapGetItemAt(i)
 	return { name = "might eagle", id = mightyEagleItemId, type = "iap", quantity = 1, description = "might eagle" }
 end
@@ -86,6 +91,7 @@ function Payment.iapInitPayment()
 end
 
 local iapHasPaymentProvider = false
+
 function Payment.iapHasPaymentProvider()
 	return iapHasPaymentProvider
 end
@@ -93,6 +99,7 @@ end
 function Payment.iapBuyItem(id)
 	iapBuyItem(id, Payment.onPurchaseStatusChanged, statuses_new)
 end
+
 Payment.iapRestoreItems = iapRestoreItems
 
 function Payment.getIapProducts()
@@ -102,9 +109,11 @@ end
 function Payment.iapInitPaymentProviders()
 	iapHasPaymentProvider = true
 	replacePaymentFunctions()
+
 	if Payment.onPaymentProviderSelected then
 		Payment.onPaymentProviderSelected()
 	end
+
 end
 
 function Payment.iapIsEnabled()--?
@@ -116,16 +125,21 @@ function Payment.isProductAvailable(item)
 end
 
 function replacePaymentFunctions()
+
 	if iap then
+
 		function iap.getItemPrice(item)
 			return true, "$0.00"
 		end
 		
 		--remove everything from underscore, not reliable
+
 		function iap.getProductNameForItem(item)
 			return item:sub(1, (item:find("_") or item:len() + 1) - 1)
 		end
+
 	end
+
 end
 
 function Payment.iapGetPurchaseLimit()
@@ -189,12 +203,14 @@ function native.Payment.catalog()
 		__index = function(self, k)
 			return {price = "$0.00"}
 		end
+
 	})
 	return catalog
 end
 
 function native.Payment.buy(item_id)
 	iapBuyItem(item_id, function(id, status)
+
 		if status == statuses.PAYMENT_SUCCEEDED then
 			native.Payment.onProductReceived(id, 0)
 		elseif status == statuses.PAYMENT_CANCELLED then
@@ -202,6 +218,7 @@ function native.Payment.buy(item_id)
 		elseif status == statuses.PAYMENT_FAILED then
 			native.Payment.onPurchaseFailed(id, "idk", 0)
 		end
+
 	end)
 end
 

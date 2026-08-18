@@ -18,6 +18,7 @@ debugScrollTarget = 0
 debugPadding = 50
 
 function checkDebugOpen()
+
 	if (keyHold["SHIFT"] and keyPressed["D"]) or (keyPressed["LBUTTON"] and cursor.x >= screenWidth - 20 and cursor.y >= screenHeight - 20) or (debugOpen and keyPressed["ESCAPE"]) then
 		keyPressed["ESCAPE"] = nil
 		debugOpen = not debugOpen
@@ -28,28 +29,37 @@ function checkDebugOpen()
 		debugScrollTarget = 0
 
 		res.playAudio("menu_confirm", 1, false)
+
 		if debugOpen then
 			love.keyboard.setTextInput(true)
 		end
+
 	end
+
 end
 
 function debugExecute(text)
+
 	if text == "clear" then
 		table.clear(debugPrints)
 		res.playAudio("menu_select", 1, false)
 	else
 		local su,re = pcall(loadstring(text))
+
 		if not su then
 			print("Error while running command: "..tostring(re))
 		else
+
 			if re then
 				print(re)--"Ran command successfully with result: "..re)
 			else
 				-- print()--"Ran command successfully")
 			end
+
 		end
+
 	end
+
 end
 
 function updateDebug(dt)
@@ -75,6 +85,7 @@ function updateDebug(dt)
 	if keyPressed["RETURN"] then
 		res.playAudio("menu_confirm", 1, false)
 		debugCursorBlink = 0
+
 		if keyHold["SHIFT"] then
 			debugText = debugText.."\n"
 			debugCursorPosition = _G._G.math.min(debugCursorPosition + 1, string.len(debugText))
@@ -89,9 +100,11 @@ function updateDebug(dt)
 			debugCursorPosition = 0
 			debugPreviousIndex = 0
 		end
+
 	end
 
 	--move the selection left/right
+
 	if keyPressed.LEFT or keyPressed.RIGHT and not (keyPressed.LEFT and keyPressed.RIGHT) then
 		local direction = (keyPressed.RIGHT and 1 or -1)
 		res.playAudio("menu_select", 1, false)
@@ -101,8 +114,10 @@ function updateDebug(dt)
 	end
 
 	--swap to the next/previous entry
+
 	if keyPressed.UP or keyPressed.DOWN and not (keyPressed.UP and keyPressed.DOWN) then
 		local direction = (keyPressed.UP and 1 or -1)
+
 		if (direction == 1 and debugPreviousIndex < #debugPrevious) or (direction == -1 and debugPreviousIndex > 0) then
 			res.playAudio("menu_select", 1, false)
 
@@ -111,6 +126,7 @@ function updateDebug(dt)
 			debugText = debugPrevious[debugPreviousIndex]
 			debugCursorPosition = #debugText
 		end
+
 	end
 
 	--scrolling
@@ -175,6 +191,7 @@ end
 
 function love.textinput(key)
 	-- print(key)
+
 	if debugOpen then
 		if not (keyHold["SHIFT"] and keyPressed["D"]) then --hack to stop D from being added
 			res.playAudio("menu_confirm", 1, false)
@@ -182,6 +199,7 @@ function love.textinput(key)
 			debugCursorPosition = debugCursorPosition + 1
 			debugCursorBlink = 0
 		end
+
 	elseif somethingTextInput then
 		somethingTextInput = key
 	end

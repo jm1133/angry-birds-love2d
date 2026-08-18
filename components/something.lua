@@ -47,6 +47,7 @@ something = {
 						end},
 					},
 					false,
+
 					function(x, y, w, h, p)
 						local opened
 						drawDebugButton("", x + 25, y + 25, 50, 50, 1, function()
@@ -60,6 +61,7 @@ something = {
 						
 						return opened
 					end
+
 				)
 			end},
 			{text = "Run File", callback = function(f)
@@ -118,9 +120,12 @@ something = {
 							return true
 						end},
 					}, false,
+
 					function(x,y,w,h,p)
 						local totaly = 0
+
 						for i, v in ipairs(arguments) do
+
 							if v.type == "bool" then
 								states[i] = states[i] or {}
 								CUI.Checkbox(states[i], x, totaly + y, 50, 50, v.display)
@@ -139,6 +144,7 @@ something = {
 							else
 								error("something: unknown type for game argument" + v.type)
 							end
+
 						end
 						
 						p.h = p.h + totaly * .75
@@ -168,6 +174,7 @@ something = {
 							end
 							
 							local success, failure = os.rename(realDir.."/"..f.path, realDir.."/"..f.folder..name)
+
 							if not success then
 								openPopup(f.name, "Could not rename to \""..textboxState.value.."\":\n"..tostring(failure)..".\nChoose a different name.")
 								return
@@ -176,6 +183,7 @@ something = {
 							return true
 						end},
 					}, false,
+
 					function(x,y,w,h,p)
 						--love.graphics.rectangle("fill", x, y, w, h) --text field?
 						CUI.Textbox(textboxState, x, y, w, 30)
@@ -189,24 +197,30 @@ something = {
 							return true
 						end},
 						{sprite = "TUTORIAL_OK", callback = function()
+
 							if not love.filesystem.getRealDirectory(f.path) then
 								openPopup(f.name, "Could not delete \""..f.name.."\":\ndoes not exist.")
 								return true
 							end
 							
 							--inspired by https://love2d.org/wiki/love.filesystem.remove
+
 							local function del(path)
+
 								if love.filesystem.getInfo(path, "directory") then
+
 									for i, file in ipairs(love.filesystem.getDirectoryItems(path)) do
 										del(path.."/"..file)
 										love.filesystem.remove(path.."/"..file)
 									end
+
 								end
 								
 								return love.filesystem.remove(path)
 							end
 							
 							local success = del(f.path)
+
 							if not success then
 								openPopup(f.name, "Could not delete \""..f.name.."\".\nThe file could be in the base directory.")
 								return true
@@ -262,6 +276,7 @@ something = {
 							return true
 						end},
 					}, false,
+
 					function(x,y,w,h,p)
 						--love.graphics.rectangle("fill", x, y, w, h) --text field?
 						CUI.Textbox(textboxState, x, y, w, 30)
@@ -321,6 +336,7 @@ function updateSomething(dt)
 	drawfont = nil
 
 	--on first load
+
 	if not so.loaded then
 		so.loaded = true
 		currentTheme = currentTheme or "theme1"
@@ -334,12 +350,14 @@ function updateSomething(dt)
 			if not success then
 				openPopup("Notice", "Couldn't mount /storage/emulated/0 for reading/writing.\nMake sure the \"all files access\" permission is enabled for the app.")
 			end
+
 		end
 
 		so.files = reloadSomething(so, so.path)
 	end
 
 	--on load
+
 	if not res.isAudioPlaying("somethingTheme") then
 		res.stopAllAudio()
 		res.playAudio("somethingTheme", 0.5, true)
@@ -386,13 +404,16 @@ function updateSomething(dt)
 		local fx, fy = x + 60, y + 60 + yoffset
 
 		--drawing a lot of text can lag
+
 		if fy + 36 >= y and fy - 12 < y + h then
 			local selected = not so.cmenu.hovering and not so.cmenu.attach and (fy >= y and fy <= y + h) and checkBounds(x, fy - 12, w, 36, cursor.x, cursor.y)
 			selected = selected and not disable and not debugOpen and not openPopups[1]
+
 			if selected then
 				--fx = fx + 10
 				
 				v.presstime = v.presstime or 0
+
 				if keyReleased.RBUTTON or v.presstime >= .35 then
 					res.playAudio("menu_select", 1)
 					v.presstime = 0
@@ -403,8 +424,10 @@ function updateSomething(dt)
 					v.presstime = v.presstime + dt
 				else
 					v.presstime = 0
+
 					if keyReleased.LBUTTON then
 						res.playAudio("menu_confirm",1)
+
 						if v.info.type == "directory" or v.info.type == "up" then
 							so.path = (resolvePath(so.path..v.name).."/"):sub(2)
 							so.files = reloadSomething(so, so.path)
@@ -418,9 +441,12 @@ function updateSomething(dt)
 						--else
 							
 						end
+
 						--break
 					end
+
 				end
+
 			end
 			
 			if v.info.type == "directory" or v.info.type == "up" then
@@ -430,11 +456,13 @@ function updateSomething(dt)
 			end
 			
 			if selected then
+
 				if keyHold.LBUTTON then
 					drawRect2(.1, .1, .1, .1, x, fy - 12, w, 36)
 				else
 					drawRect2(.2, .2, .2, .2, x, fy - 12, w, 36)
 				end
+
 			end
 
 			drawDebugText(v.name, fx + 30, fy, "LEFT", "FONT_BASIC")
@@ -457,6 +485,7 @@ function updateSomething(dt)
 	love.graphics.setScissor()
 	
 	if keyReleased.LBUTTON and not so.cmenu.hovering then
+
 		if not so.cmenu.noClose then
 			so.cmenu.attach = nil
 		end
@@ -471,10 +500,12 @@ function updateSomething(dt)
 		so.cmenu.anim = _G._G.math.min(_G._G.math.max(so.cmenu.anim + (attach and dt or -dt * 2), 0), 1 / 4)
 		
 		for i, v in ipairs(so.cmenu.items) do
+
 			if v then
 				width = _G._G.math.max(width, res.getStringWidth(v.text) + 16 + 16)
 				height = height + 18
 			end
+
 			height = height + 18
 		end
 		
@@ -493,12 +524,16 @@ function updateSomething(dt)
 		drawRect2(48 / 255, 60 / 255, 75 / 255, 1, so.cmenu.x, so.cmenu.y, width, height, 5)
 
 		local itemy = 0
+
 		for i, v in ipairs(so.cmenu.items) do
+
 			if v then
 				local ix, iy = so.cmenu.x + 16, itemy + so.cmenu.y + 16
 				local selected = so.cmenu.hovering and checkBounds(0, iy, screenWidth, 36, cursor.x, cursor.y) and attach ~= nil
+
 				if selected then
 					--ix = ix + 12
+
 					if keyHold.LBUTTON then
 						drawRect2(60 / 255 / 2, 80 / 255 / 2, 100 / 255 / 2, 1 / 2, so.cmenu.x, iy, width, 36, 5)
 					else
@@ -514,11 +549,13 @@ function updateSomething(dt)
 						v.callback(attach)
 						so.cmenu.attach = nil
 					end
+
 				end
 
 				drawDebugText(v.text, ix, iy + 10)
 				itemy = itemy + 18
 			end
+
 			itemy = itemy + 18
 		end
 		
@@ -526,6 +563,7 @@ function updateSomething(dt)
 	end
 
 	drawDebugText(so.path or "Files", screenWidth * .5, _G._G.math.min(padding / 2, 100), "HCENTER", "FONT_MENU", w)
+
 	if currentGameMode and currentGameMode == updateSomething then
 		drawDebugButton("BUTTON_ARROW_LEFT", padding / 3, padding / 3, nil, nil, 1, function()
 			res.stopAudio("somethingTheme")
@@ -557,6 +595,7 @@ end
 function reloadSomething(so,path)
 	local items = love.filesystem.getDirectoryItems(path)
 	files = {}
+
 	if path ~= "/" then
 		table.insert(files, {name = "..", info = {type = "up"}, folder = path})
 	end
@@ -583,6 +622,7 @@ function reloadSomething(so,path)
 		else --fine, sort it by name
 			return a.name:lower() < b.name:lower()
 		end
+
 	end)
 
 	return files

@@ -10,18 +10,22 @@ function res.createAudioOutput(channels, bitrate, samplerate)
 	accurateAudioSpeed._hz = samplerate
 
 	audiochannels = {}
+
 	for i = 1, 10 do
 		table.insert(audiochannels, {})
 		channelVolumes[i] = 1
 	end
+
 end
 
 function res.createAudio(path, name, streamed, cloudAsset)
+
 	if cloudAsset then
 		audios[name] = path
 	else
 		audios[name] = datapath.."/"..path
 	end
+
 end
 
 function createAudioFromLua(path, name, streamed)--?
@@ -33,16 +37,21 @@ function res.createCompositeAudio(name, list) --absw.. not sure why they had to 
 end
 
 function res.isAudioPlaying(audio)
+
 	if not audiochannels or not cachedaudios[audio] or cachedaudios[audio] == 0 then
 		return false
 	end
 
 	for i, channel in ipairs(audiochannels) do
+
 		for ii, sound in ipairs(channel) do
+
 			if sound.name == audio and sound.source:isPlaying() then
 				return true
 			end
+
 		end
+
 	end
 
 	return false
@@ -63,29 +72,37 @@ function res.playAudio(audio, volume, loop, track)
 	if track then
 		channel = track + 1
 		assert(audiochannels[channel] ~= nil, "Track " .. track .. " out of bounds! Range [0-9]")
+
 		if #audiochannels[channel] >= maxChannel then
 			audioStreamAllowed = false
 		end
+
 	else
+
 		if #audiochannels[channel] >= maxChannel then
 			local availableChannel = 2
 			local channelFound = false
 			
 			while availableChannel <= #audiochannels do
+
 				if #audiochannels[availableChannel] < maxChannel then
 					channel = availableChannel
 					channelFound = true
 					break
 				end
+
 				availableChannel = availableChannel + 1
 			end
 			
 			audioStreamAllowed = channelFound
 		end
+
 	end
 	
 	--actually load audios when it's time to play them
+
 	if not cachedaudios[audio] then
+
 		if type(audios[audio]) == "string" and not checkDirectory(audios[audio]) then
 			cachedaudios[audio] = 0
 			print("Audio file \""..audios[audio].."\" not found.")
@@ -94,11 +111,13 @@ function res.playAudio(audio, volume, loop, track)
 
 		--if the audio loops it's likely that it should be streamed from disk
 		--wrap it in a pcall in case love throws a tantrum
+
 		if not pcall(function() cachedaudios[audio] = love.audio.newSource(audios[audio], loop and "stream" or "static") end) then
 			cachedaudios[audio] = 0
 			print("Audio file \""..audios[audio].."\" could not be decoded.")
 			return
 		end
+
 	end
 
 	if audioStreamAllowed then
@@ -121,9 +140,11 @@ function res.playAudio(audio, volume, loop, track)
 
 		table.insert(audiochannels[channel], {name = audio, source = source, volume = volume or 1})
 	end
+
 end
 
 local res_playAudio = res.playAudio
+
 function ResourceManager.native_playAudio(audio, volume, flag, channel)
 	res_playAudio(audio, volume)
 end
@@ -133,36 +154,48 @@ function ResourceManager.native_createAudio(path, name)
 end
 
 function res.stopAudio(audio)
+
 	if not audiochannels or not cachedaudios[audio] or cachedaudios[audio] == 0 then
 		return
 	end
 
 	for i, channel in ipairs(audiochannels) do
+
 		for ii, sound in ipairs(channel) do
+
 			if sound.name == audio then
 				local source = sound.source
 				source:stop()
 				return
 			end
+
 		end
+
 	end
+
 end
 
 function res.releaseAudio(audio)
+
 	if not audiochannels or not cachedaudios[audio] or cachedaudios[audio] == 0 then
 		return
 	end
 
 	for i, channel in ipairs(audiochannels) do
+
 		for ii, sound in ipairs(channel) do
+
 			if sound.name == audio then
 				local source = sound.source
 				source:stop()
 				source:release()
 				return
 			end
+
 		end
+
 	end
+
 end
 
 function res.setTrackVolume(vol, track)
@@ -170,10 +203,13 @@ function res.setTrackVolume(vol, track)
 	channelVolumes[channel] = _G._G.math.min(_G._G.math.max(vol, 0), 1)
 
 	if audiochannels then
+
 		for i, sound in ipairs(audiochannels[channel]) do
 			sound.source:setVolume(sound.volume * vol)
 		end
+
 	end
+
 end
 
 function res.getTrackVolume(track)
@@ -185,10 +221,13 @@ function res.stopAllAudio()
 	love.audio.stop()
 
 	if audiochannels then
+
 		for k, _ in ipairs(audiochannels) do
 			table.clear(audiochannels[k])
 		end
+
 	end
+
 end
 
 function res.stopAudioOutput()

@@ -17,6 +17,7 @@ arguments = {
 				{sprite = "TUTORIAL_OK", callback = function()
 					local success1 = love.filesystem.remove("settings.lua")
 					local success2 = love.filesystem.remove("highscores.lua")
+
 					if success1 or success2 then
 						openPopup("Data", "Successfully deleted save data.", nil, true)
 					elseif not checkDirectory("settings.lua") and not checkDirectory("highscores.lua") then
@@ -24,6 +25,7 @@ arguments = {
 					else
 						openPopup("Data", "Could not properly delete save data.", nil, true)
 					end
+
 					settings, highscores = {}, {}
 
 					return true
@@ -36,24 +38,30 @@ arguments = {
 		print("Clearing dec/...")
 		
 		--code duplication
+
 		local function del(path)
+
 			if love.filesystem.getInfo(path, "directory") then
+
 				for i, file in ipairs(love.filesystem.getDirectoryItems(path)) do
 					del(path.."/"..file)
 					love.filesystem.remove(path.."/"..file)
 				end
+
 			end
 			
 			return love.filesystem.remove(path)
 		end
 		
 		local success = del("dec")
+
 		if not success then
 			print("Could not clear dec/")
 			openPopup("dec", "Could not clear the \"".."dec".."\"folder.")
 		else
 			print("Cleared dec/")
 		end
+
 	end},
 	
 	{display = "Device Model", names = {"--model", "-m"}, args = 1, type = "string", call = function(arg1)
@@ -87,6 +95,7 @@ function setDataPathFromFile(file)
 	--TODO: move zip handling to another file
 	love.filesystem.setIdentity(identity)
 	local info = love.filesystem.getInfo(file)
+
 	if info and info.type == "file" then
 		print("Opening \""..file.."\" as a ZIP file...")
 		
@@ -95,12 +104,16 @@ function setDataPathFromFile(file)
 		local success = love.filesystem.mount(src, file)
 
 		datapath = file
+
 		if success then
 			--look recursively for a data folder,
 			--it varies between pc installations, ipas, and apks
+
 			local function look(dir, target)
 				--first loop through all the items
+
 				for i, file in ipairs(love.filesystem.getDirectoryItems(dir)) do
+
 					if file:lower():match(target:lower()) then
 						--found it already?
 						return dir.."/"..file
@@ -114,13 +127,18 @@ function setDataPathFromFile(file)
 							if found then
 								return found
 							end
+
 						end
+
 					end
+
 				end
+
 			end
 			
 			--make a guess
 			--TODO: make a better guess by looking at the binary
+
 			if endsWith(datapath, ".ipa") then
 				deviceModel = "iphone"
 			elseif endsWith(datapath, ".apk") then
@@ -140,8 +158,10 @@ function setDataPathFromFile(file)
 		else
 			return false
 		end
+
 	elseif info and (info.type == "directory" or info.type == "symlink") then
 		print("Opening \""..file.."\" as a folder...")
+
 		if file ~= "" then
 			openedDatapath = true
 		end
@@ -154,6 +174,7 @@ function setDataPathFromFile(file)
 	end
 	
 	--write to autoboot.lua to make playing on mobile less of a hassle
+
 	if mobileDevice then
 		love.filesystem.write(autoboot_path,
 ([[--Auto-generated autoboot file.
@@ -169,51 +190,72 @@ setDataPathFromFile("%s")]]):format(file))
 end
 
 function processArgsTable(restart)
+
 	if restart and type(restart) == "table" then
+
 		if restart.runfilePath then
 			setDataPathFromFile(restart.runfilePath or datapath)
 		end
 		
 		if restart.arg then
+
 			for i, arg in ipairs(restart.arg) do
 				local v = arguments[i]
 				
 				if v.type == "bool" then
+
 					if arg.value then
 						v.call()
 					end
+
 				elseif v.type == "string" then
+
 					if arg.value ~= "" then
 						v.call(arg.value)
 					end
+
 				end
+
 			end
+
 		end
+
 	end
+
 end
 
 --this is only called at boot
+
 function handleStartArgs()
+
 	local function process(arg)
+
 		if arg then
 			local skip = 0
+
 			for i, name in ipairs(arg) do
+
 				if skip > 0 then
 					skip = skip - 1
 				else
 					if name:sub(1, 1) == "+" then --run lua, alt syntax (srb2)
 						debugExecute(name:sub(2))
 					else
+
 						for _, v in ipairs(arguments) do
 							local matches = false
+
 							for _, match in ipairs(v.names) do
+
 								if match == name then
 									matches = true
 									break
 								end
+
 							end
 							
 							if matches then
+
 								if v.call then
 									v.call(unpack(arg, i + 1, i + v.args))
 								end
@@ -222,14 +264,21 @@ function handleStartArgs()
 								
 								break
 							end
+
 						end
+
 					end
+
 				end
+
 			end
+
 		end
+
 	end
 	
 	--automatically boot to the last datapath on mobile systems that don't have an accessible file manager
+
 	if mobileDevice and checkDirectory(autoboot_path) and not openedDatapath then
 		ranAutoboot = true
 		loadLuaFile(autoboot_path)
@@ -241,15 +290,22 @@ function handleStartArgs()
 end
 
 function handlePostStartArgs()
+
 	if arg then
+
 		for i,v in ipairs(arg) do
 			if v == "--skipintro" or v == "-si" then --skip splash screens
 				local attempts = 20
+
 				repeat
 					update(1, 1)
 					attempts = attempts - 1
 				until love.audio.getActiveSourceCount() > 0 or currentGameMode ~= updateSplashes or attempts <= 0
+
 			end
+
 		end
+
 	end
+
 end

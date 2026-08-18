@@ -6,6 +6,7 @@ function love.errorhandler(msg)
 	errors = errors + 1
 
 	--enough
+
 	if errors >= 3 then
 		return
 	end
@@ -15,9 +16,11 @@ function love.errorhandler(msg)
 		setDataPathFromFile("")
 		
 		--clear autoboot if it exists
+
 		if mobileDevice and love.filesystem.remove(autoboot_path) then
 			print("Removed "..autoboot_path)
 		end
+
 	end)
 
 	msg = tostring(msg)
@@ -30,25 +33,32 @@ function love.errorhandler(msg)
 
 	if not love.graphics.isCreated() or not love.window.isOpen() then
 		local success, status = pcall(love.window.setMode, 800, 600)
+
 		if not success or not status then
 			return
 		end
+
 	end
 
 	-- Reset state.
+
 	if love.mouse then
 		love.mouse.setVisible(true)
 		love.mouse.setGrabbed(false)
 		love.mouse.setRelativeMode(false)
+
 		if love.mouse.isCursorSupported() then
 			love.mouse.setCursor()
 		end
+
 	end
 	
 	if love.joystick then
+
 		for i,v in ipairs(love.joystick.getJoysticks()) do
 			v:setVibration()
 		end
+
 	end
 
 	time = 0
@@ -61,9 +71,11 @@ function love.errorhandler(msg)
 	love.graphics.origin()
 
 	local sanitizedmsg = {}
+
 	for char in msg:gmatch(utf8.charpattern) do
 		table.insert(sanitizedmsg, char)
 	end
+
 	sanitizedmsg = table.concat(sanitizedmsg)
 
 	local err = {}
@@ -78,10 +90,12 @@ function love.errorhandler(msg)
 	table.insert(err, "\n")
 
 	for l in trace:gmatch("(.-)\n") do
+
 		if not l:match("boot.lua") then
 			l = l:gsub("stack traceback:", "Stack traceback:\n")
 			table.insert(err, l)
 		end
+
 	end
 
 	local p = table.concat(err, "\n")
@@ -129,6 +143,7 @@ function love.errorhandler(msg)
 		else
 			love.graphics.print(p, pos, pos)
 		end
+
 	end
 
 	return function()
@@ -146,6 +161,7 @@ function love.errorhandler(msg)
 		end)
 
 		for name, a, b, c, d, e, f, g, h in love.event.poll() do
+
 			if name == "quit" then
 				return 1
 			elseif name == "keypressed" and a == "escape" then
@@ -153,9 +169,11 @@ function love.errorhandler(msg)
 			elseif name:find("mouse") or name:find("touch") or name:find("key") or name:find("textinput") then
 				love.handlers[name](a,b,c,d,e,f,g,h)
 			end
+
 		end
 		
 		if keyReleased.LBUTTON and not debugOpen then
+
 			if not openPopups[1] then
 				openPopup("Angry Birds", "Exit the game?", {
 					-- {sprite = "BUTTON_RESTART", callback = function()
@@ -179,6 +197,7 @@ function love.errorhandler(msg)
 				-- 	love.system.setClipboardText(fullErrorText)
 				-- end
 			end
+
 		end
 
 		draw(1 / 100)
@@ -186,6 +205,7 @@ function love.errorhandler(msg)
 		updatePopup()
 		
 		if checkDebugOpen then checkDebugOpen() end
+
 		if debugOpen then
 			updateDebug(dt, cx, cy)
 		end
@@ -199,15 +219,19 @@ function love.errorhandler(msg)
 		else
 			love.keyboard.setKeyRepeat(false)
 		end
+
 		love.graphics.present()
 
 		if love.timer then
 			love.timer.sleep(1 / 100)
 		end
+
 	end
+
 end
 
 --thread error handler in case fetch encountered an error
+
 function love.threaderror(thread, errorstr)
 	print("Error running thread:\n", errorstr)
 end

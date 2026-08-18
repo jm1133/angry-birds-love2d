@@ -54,16 +54,19 @@ function LevelParticlesManager.firstFrame()
 			weatherParticles.y = _G._G._G.math.min(ccd.py, ccd.py) - screenHeight * 0.5 / screenHeight * minWorldScale / screenWidth
 			weatherParticles.x = weatherParticles.x + _G._G._G.math.abs(weatherParticles.y) * 0.5
 			weatherParticles.width = weatherParticles.width + _G._G._G.math.abs(weatherParticles.y) * 0.5
+
 			if particle.reference then
 				weatherParticles.interval = 1 / particle.reference.amount
 			else
 				weatherParticles.firstFrame = true
 			end
+
 		else -- legacy
 			weatherParticles.y = _G._G._G.math.max(ccd.py - ccd.screenHeight / ccd.sy, bcd.py - bcd.screenHeight / bcd.sy) - groundLimit
 			weatherParticles.width = weatherParticles.width + (particle.maxVelX or particle.emitter_circle.maxVel or 0)
 			weatherParticles.firstFrame = true
 		end
+
 		weatherParticles.height = 0
 		weatherParticles.lifeTime = particle.lifeTime
 	end
@@ -78,11 +81,13 @@ local function update(delta)
 	local weather = weatherParticles
 	_G.assert(weather.timer ~= nil, "LevelParticlesManager.start has not been called")
 	weather.timer = weather.timer + delta
+
 	if weather.interval <= weather.timer then
 		local min, max = _G._G._G.math.modf(weather.timer / weather.interval)
 		particles.addParticles(weather.particles, min, weather.x, weather.y, weather.width, weather.height, 0, false, false)
 		weather.timer = max
 	end
+
 end
 
 function LevelParticlesManager.start()
@@ -90,11 +95,14 @@ function LevelParticlesManager.start()
 	local weather = weatherParticles
 	
 	weather.timer = 0
+
 	if weather.looping then
 		particles.addParticles(weather.particles, weather.amount, weather.x, weather.y, weather.width, weather.height, 0, true, false)
 		LevelParticlesManager.firstFrame()
 	else
+
 		if weather.firstFrame ~= nil then
+
 			if weather.firstFrame then
 				weather.amount = levelParticles.settingsBegin.amount
 				weather.ignoreLimits = levelParticles.settingsBegin.ignoreLimits
@@ -108,10 +116,13 @@ function LevelParticlesManager.start()
 		end
 		
 		local delay = 0
+
 		while delay < weather.lifeTime do
 		    local interval = weather.interval
 		    update(interval)
 		    delay = delay + interval
 		end
+
 	end
+
 end

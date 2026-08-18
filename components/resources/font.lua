@@ -7,7 +7,9 @@ drawfont = ""
 
 --if the displayscale is not 1, text snapping to pixels is probably more important than non-crisp text
 --(the text would be blurry already)
+
 local function textFloor(a)
+
 	if displayScale * love.graphics.getDPIScale() ~= 1 then
 		return a
 	end
@@ -18,6 +20,7 @@ end
 function res.createBitmapFont(font, silent)
 	font = datapath.."/"..font
 	local fontname = font:match("([^/]+)$"):sub(1, -5)
+
 	if not silent then
 		print("Loading font file \""..font.."\"...")
 	end
@@ -27,6 +30,7 @@ function res.createBitmapFont(font, silent)
 	end
 
 	if checkDirectory(font) then
+
 		if not fonts[fontname] then
 			local data = getDatInfo(love.filesystem.read(font), font, "FONT")
 			if not data then print("Failed to load font "..fontname) return end
@@ -46,6 +50,7 @@ function res.createBitmapFont(font, silent)
 
 					--and append the real filename to it before passing in the real path
 					local newname, paths = findCaseInsensitive(zip.."/"..parentDir.."/"..data.filename)
+
 					if not newname then
 						newname, paths = findCaseInsensitive(zip.."/"..data.filename)
 					end
@@ -55,6 +60,7 @@ function res.createBitmapFont(font, silent)
 					--or it didn't even work
 					print("createBitmapFont: could not unzip "..zip)
 				end
+
 			end
 			
 			if endsWith(spritesheet, ".pvr") then
@@ -70,31 +76,39 @@ function res.createBitmapFont(font, silent)
 				height = data.height, maxascending = data.maxascending, maxdescending = data.maxdescending}
 
 			--for each character, also construct a quad
+
 			for _, char in pairs(data.chars) do
 				fonts[fontname].chars[_] = {quad = love.graphics.newQuad(char.x, char.y, char.width, char.height, spritesheet:getWidth(), spritesheet:getHeight()),
 					width = char.width, height = char.height, pivoty = char.pivotY}
 			end
+
 		elseif not silent then
 			print("Font "..fontname.." is already loaded.")
 		end
+
 	elseif not silent then
 		print("Could not find font "..fontname)
 	end
+
 end
 
 function res.useFont(font)
+
 	if fonts[font] then
 		drawfont = font
 	end
+
 end
 
 function res.drawString(group, text, x, y, aligny, alignx)
 	text = tostring(text) or ""
+
 	if group and group ~= "" then
 		text = res.getString(group, text)
 	end
 
 	local font = fonts[drawfont]
+
 	if font then
 		local ay = font.maxascending
 
@@ -120,6 +134,7 @@ function res.drawString(group, text, x, y, aligny, alignx)
 
 				for p, c in utf8.codes(l) do
 					local char = font.chars[c]
+
 					if char then
 						local charX = (x + i + ax)
 						local charY = (y + ay - char.pivoty + (line * font.leading))
@@ -127,11 +142,14 @@ function res.drawString(group, text, x, y, aligny, alignx)
 						love.graphics.draw(font.spritesheet, char.quad, textFloor(charX), textFloor(charY), drawangle)
 						i = i + (char.width + font.tracking)
 					end
+
 				end
+
 			end
 
 			line = line + 1
 		end
+
 	else
 		--temporarily revert blendmode
 		local bm, am = love.graphics.getBlendMode()
@@ -151,6 +169,7 @@ function res.drawString(group, text, x, y, aligny, alignx)
 end
 
 --draw 2.0.0 text
+
 function drawUITextNative(self, x, y, scale_x, scale_y, angle, hover_scale)
 	local alpha = self.alpha or 1
 	local hs = hover_scale or 1
@@ -162,6 +181,7 @@ function drawUITextNative(self, x, y, scale_x, scale_y, angle, hover_scale)
 	love.graphics.translate(textFloor(self.x * hs + x), textFloor(self.y * hs + y))
 
 	--spans multiple lines
+
 	if self.clipped then
 		local font = fonts[drawfont]
 
@@ -179,10 +199,12 @@ function drawUITextNative(self, x, y, scale_x, scale_y, angle, hover_scale)
 			--go to the next line
 			love.graphics.translate(0, textFloor(res.getFontLeading()))
 		end
+
 	else
 		love.graphics.scale((scale_x or 1) * self.scaleX * hs, (scale_y or 1) * self.scaleY * hs)
 		res.drawString(self.group, self.text, 0, 0, self.hanchor, self.vanchor)
 	end
+
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.pop()
 end
@@ -202,6 +224,7 @@ function clipText(group, text, size)
 
 	for word in text:gmatch("%S+%s*") do
 		local newline = word:find("\n")
+
 		if newline then
 			local preline = word:sub(1, newline - 1)
 			local postline = word:sub(newline + 1)
@@ -229,9 +252,11 @@ function clipText(group, text, size)
 				table.insert(clippedText.lines, "")
 				word = word:sub(word:find("\n") + 1)
 			end
+
 		end
 
 		local wordwidth = res.getStringWidth(word)
+
 		if clinewidth + wordwidth > size then
 			table.insert(clippedText.lines, cline)
 			clippedText.widestLine = _G._G.math.max(clippedText.widestLine, clinewidth)
@@ -241,52 +266,67 @@ function clipText(group, text, size)
 			cline = cline..word
 			clinewidth = clinewidth + wordwidth
 		end
+
 	end
 
 	if cline ~= "" then
 		table.insert(clippedText.lines, cline)
 		clippedText.widestLine = _G._G.math.max(clippedText.widestLine, clinewidth)
 	end
+
 end
 
 function res.getStringWidth(text, font, _, _, resetline)
 	text = text or ""
 	local font = fonts[font] or fonts[drawfont]
+
 	if font then
 		local highscore = 0
 		local i = 0
+
 		for p, c in utf8.codes(text) do
 			local char = font.chars[c]
+
 			if c == "\n" then
 				i = 0
+
 				if resetline then
 					highscore = 0
 				end
+
 			elseif char then
 				i = i + char.width + font.tracking
 				highscore = _G._G.math.max(highscore, i)
 			end
+
 		end
+
 		return highscore - font.tracking
 	else
 		local font = love.graphics.getFont()
 		return font:getWidth(text) --does not account for line breaks
 	end
+
 	-- return 0
 	-- return screenWidth*.75
 end
 
 --used by console
+
 function res.getStringHeight(text, font, start)
 	text = text or ""
 	local font = fonts[font or drawfont]
 	local increment = font and font.leading or (love.graphics.getFont():getHeight() - .5)
 	local i = start and increment or 0
+
 	for c in text:gmatch(".") do
+
 		if c == "\n" then
 			i = i + increment
 		end
+
 	end
+
 	return i
 end
 
@@ -325,6 +365,7 @@ function string.insert(str1, str2, pos)
 	return str1:sub(1, len)..str2..str1:sub(len + 1)]]
 	local final = ""
 	local amount = 0
+
 	if pos == 0 then
 		return str2..str1
 	end
@@ -336,6 +377,7 @@ function string.insert(str1, str2, pos)
 		if amount == pos then
 			final = final..str2
 		end
+
 	end
 	
 	return final
@@ -343,9 +385,11 @@ end
 
 function string.back(str1, pos)
 	--[[pos = pos + 1
+
 	if pos <= 1 or pos > #str1 + 1 then
 		return str1
 	end
+
 	return str1:sub(1, pos - 2)..str1:sub(pos)]]
 	local final = ""
 	local amount = 0
@@ -356,6 +400,7 @@ function string.back(str1, pos)
 		if amount ~= pos then
 			final = final..utf8.char(c)
 		end
+
 	end
 	
 	return final
@@ -375,6 +420,7 @@ function string.getLineAt(text, cursor)
 		elseif cursor <= len then
 			return line, lines
 		end
+
 	end
 	
 	if text:sub(text:len(), text:len()) == "\n" then

@@ -295,6 +295,7 @@ end
 CloudSync = {}
 
 --almost certainly not right but..
+
 function CloudSync.combineSettings(cloud, loc, bool)
 	local out = {}
 	
@@ -318,6 +319,7 @@ function setNotificationsEnabled(enabled)
 end
 
 --short fuse
+
 function useAsBackgroundMask()--?
 	return
 end
@@ -332,6 +334,7 @@ function native.MathUtils.isPointInRect(point, rect)
 end
 
 --lifted from 1.6.3.1
+
 function worldToPhysicsTransform(x, y)
 	local px = x * physicsScale
 	local py = y * physicsScale
@@ -392,14 +395,18 @@ function checkObjectBounds(x, y, width, height, angle, cursorX, cursorY)
 	local bottom = halfHeight
 	
 	if tcx >= left and tcx < right then
+
 		if tcy >= top and tcy < bottom then
 			return true
 		end
+
 	end
+
 	return false
 end
 
 --5.1.0
+
 function native.loadLuaTable(filename, env, a)
 	return loadLuaFileToObject(filename, env, "")
 end
@@ -450,15 +457,18 @@ end
 CameraNative = {}
 
 --CameraNative.setCameraZoomScale = setWorldScale
+
 function CameraNative.setCameraZoomScale(scale)
 	renderScale = scale
 	--setWorldScale(scale)
 end
+
 function CameraNative.setCameraTopLeft(left, top)
 	renderLeft = left
 	renderTop = top
 	--setTopLeft(left, top)
 end
+
 CameraNative.drawGame = drawGameNative
 
 function CameraNative.updateGFXEffects(dt)
@@ -530,6 +540,7 @@ function raycast(x1, y1, x2, y2)
 
 			return 0
 		end
+
 	end)
 
 	return hit, hit_name, hit_x, hit_y
@@ -538,6 +549,7 @@ end
 function raycastAll(info)
 	local results = getRayCastedObjects(info)
 	local hits = {}
+
 	for i = 1, #results do
 		local target = results[i]
 		local dx = target.x - info.x1
@@ -559,13 +571,17 @@ function native.FileSystem.enumerate(path, a, type, recursive)
 	
 	for i, file in ipairs(files) do
 		local filetype = love.filesystem.getInfo(newpath.."/"..file).type
+
 		if recursive and filetype == "directory" then
+
 			for file2, v in pairs(native.FileSystem.enumerate(path.."/"..file, a, type, recursive)) do
 				output[file.."/"..file2] = v
 			end
+
 		else
 			output[file] = filetype
 		end
+
 	end
 	
 	return output
@@ -573,6 +589,7 @@ end
 
 
 --stella
+
 function createUniqueShaders(shader, a)
 	return {}
 end
@@ -813,6 +830,7 @@ setmetatable(IGCItemInfo, {
 	__index = function(a)
 		return {iconId = "BIRD_RED", analyticsType = "", analyticsName = "", type = "dummy"}
 	end
+
 })
 
 
@@ -838,6 +856,7 @@ end
 
 
 --another file?
+
 function setFilterGroup()--?
 	return
 end
@@ -891,6 +910,7 @@ end
 
 
 --8.0.3
+
 function native.FileSystem.exists(path)--?
 	return checkDirectory(datapath.."/"..path)
 end
@@ -976,18 +996,22 @@ end
 
 function setShaderToGameObject(object, shader)
 	local obj = objects.world[object]
+
 	if obj then
 		-- FIXME : love doesn't support the input shader format, and so the data must be parsed.
 		obj.shader = love.graphics.newShader(shader)
 	end
+
 end
 
 function setObjectColor(object, r, g, b, a)
 	local obj = objects.world[object]
+
 	if obj then
 		local r, g, b, a = r / 255, g / 255, b / 255, a / 255
 		obj.colors = {r * a, g * a, b * a, a}
 	end
+
 end
 
 function hasBody(object)
@@ -996,6 +1020,7 @@ end
 
 native.luaRenderBuffer = {}
 -- special drawing routine for later versions
+
 function createLuaAssetRenderer(self, sprite, zOrder)
 	local renderer = {
 		sprite = sprite,
@@ -1019,16 +1044,20 @@ end
 
 function disposeLuaAssetRenderer(renderId)
 	local render = native.luaRenderBuffer[renderId]
+
 	if render then
 		render.owner.luaAssetRenderer = nil
 		native.luaRenderBuffer[renderId] = nil
 	end
+
 end
 
 function clearLuaAssetRender()
+
 	for renderId, _ in pairs(native.luaRenderBuffer) do
 		disposeLuaAssetRenderer(renderId)
 	end
+
 end
 
 specialOfferMeta = {}
@@ -1109,6 +1138,7 @@ end
 
 
 --flash animations?
+
 function cutsceneLoad(a)--?
 	return
 end
@@ -1145,12 +1175,17 @@ function res.getCompoSpriteEntry(composprite, sprite)
 	composprite = checkSprite(composprite)
 
 	if composprite then
+
 		for i, v in pairs(composprite.items) do
+
 			if v.n == sprite then
 				return v
 			end
+
 		end
+
 	end
+
 end
 
 

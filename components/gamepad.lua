@@ -5,6 +5,7 @@ joystick = nil
 
 function registerGamepadKey(joystick, key, button) --check if a controller button is pressed and press a keyboard/mouse button accordingly
 	local hold = keyHold[key]
+
 	if button == false then
 		keyHold[key] = nil
 	else
@@ -19,52 +20,69 @@ function updateGamepad(dt)
 	local x, y = joystick:getAxis(1), joystick:getAxis(2)
 	-- if _G._G.math.abs(x) < .1 then x = 0 end
 	-- if _G._G.math.abs(y) < .1 then y = 0 end
+
 	if _G._G.math.abs(x) < .1 and _G._G.math.abs(y) < .1 then
 		x, y = 0, 0
 	end
 
 	if physicsEnabled then
+
 		if not levelCompleted and (x ~= 0 or y ~= 0) and not cameraTargetObject then
+
 			if currentBirdName ~= nil then
 				local obj = objects.world[currentBirdName]
 				panToBirdCamera()
 				selectedBird = obj
 			end
+
 			registerGamepadKey(joystick, "LBUTTON", true)
 
 			local rubberBandMaximumLength = 2.2 + 3.2
 			local sx,sy = physicsToWorldTransform(levelStartPosition.x,levelStartPosition.y)
 			cursor.x, cursor.y = (sx - screen.left) * worldScale + (x * rubberBandMaximumLength * 20 * worldScale),
 				(sy - screen.top) * worldScale + (y * rubberBandMaximumLength * 20 * worldScale)
+
 			if joystick:isGamepadDown("a") then
 				registerGamepadKey(joystick, "LBUTTON" ,false)
 			end
+
 			gpc = .01
 		else
+
 			if gpc > 0 then
+
 				if not joystick:isGamepadDown("a") then
 					gpc = gpc - dt
+
 					if currentBirdName then
 						gpc = 0
+
 						if cancelBirdDrag then
 							cancelBirdDrag()
 						end
+
 					end
+
 				end
+
 			else
 				registerGamepadKey(joystick, "LBUTTON", "a")
 			end
+
 		end
+
 	else
 		--move cursor
 		gpcx = _G._G.math.max(20, _G._G.math.min(gpcx + (x * 800 * dt), screenWidth - 20))
 		gpcy = _G._G.math.max(20, _G._G.math.min(gpcy + (y * 800 * dt), screenHeight - 20))
+
 		if gpc <= 0 then
 			registerGamepadKey(joystick, "LBUTTON", "a")
 
 			cursor.x = gpcx
 			cursor.y = gpcy
 		end
+
 	end
 
 	registerGamepadKey(joystick, "ESCAPE", "b")

@@ -3,6 +3,7 @@
 function readComp(fileData,head,version)
 	data = {compos = {}}
 	skip(2)
+
 	if head == "RVIO" then
 		--new composprite
 		data.rvio = true
@@ -30,7 +31,9 @@ function readComp(fileData,head,version)
 											n = spritename}
 				skip(18)
 			end
+
 		end
+
 	else
 		--older composprite
 		for i=1,readInt(fileData,pos-2),1 do --each composprite
@@ -47,8 +50,11 @@ function readComp(fileData,head,version)
 											y = readInt(fileData,pos+2), n = spritename}
 				skip(4)
 			end
+
 			if version == 2 then skip(2) end --odd..
 		end
+
 	end
+
 	return data
 end

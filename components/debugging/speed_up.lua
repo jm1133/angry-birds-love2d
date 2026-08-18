@@ -12,6 +12,7 @@ function getPauseState()
 
 	--deliberately do the check after making the value
 	--so the game still draws when you first pause
+
 	if keyHold.SHIFT and keyPressed.Z then
 		debugPaused = not debugPaused
 	end
@@ -20,6 +21,7 @@ function getPauseState()
 end
 
 function speedUpPre(dt2)
+
 	if isSpeedingUp() then
 		dt2 = dt2 * 5
 	end
@@ -34,7 +36,9 @@ function speedUpPre(dt2)
 end
 
 function speedUpPost()
+
 	if isSpeedingUp() or debugPaused then
 		drawRect2(.2, .2, .2, .5, 0, 0, screenWidth, screenHeight)
 	end
+
 end

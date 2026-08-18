@@ -106,6 +106,7 @@ end
 --other hatchery functions
 
 --notifications
+
 function addNotificationAfter(id, time, text)
 	print("Queue notification \""..tostring(id).."\" after "..(tonumber(time) or 0) / (60).." minutes:\n"..tostring(text))
 end
@@ -119,6 +120,7 @@ function removeAllNotifications()
 end
 
 --crystal
+
 function isCrystalUIShowing()
 	return false
 end

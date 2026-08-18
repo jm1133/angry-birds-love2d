@@ -1,4 +1,5 @@
 --load components
+
 if not jit then
 	print("LuaJIT not found; disabling libcrypto and WebP")
 end

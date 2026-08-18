@@ -19,6 +19,7 @@ function love.keyreleased(key, scancode)
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
+
 	if button == 1 then
 		keyPressed.LBUTTON = true
 		keyHold.LBUTTON = true
@@ -29,9 +30,11 @@ function love.mousepressed(x, y, button, istouch, presses)
 		keyPressed.MBUTTON = true
 		keyHold.MBUTTON = true
 	end
+
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
+
 	if button == 1 then
 		keyReleased.LBUTTON = true
 		keyHold.LBUTTON = false
@@ -42,10 +45,13 @@ function love.mousereleased(x, y, button, istouch, presses)
 		keyReleased.MBUTTON = true
 		keyHold.MBUTTON = false
 	end
+
 end
 
 local prevTouches
+
 function updatePinch()
+
 	if touches and prevTouches and #touches == 2 and #prevTouches == 2 then
 		local dist = _G._G.math.sqrt((touches[1].x - touches[2].x) ^ 2 + (touches[1].y - touches[2].y) ^ 2)
 		local prevdist = _G._G.math.sqrt((prevTouches[1].x - prevTouches[2].x) ^ 2 + (prevTouches[1].y - prevTouches[2].y) ^ 2)

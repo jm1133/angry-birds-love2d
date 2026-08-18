@@ -11,6 +11,7 @@ function readFont(fileData)
 	skip(4)
 
 	--loop through all the characters
+
 	while pos <= #fileData do
 		local char = readInt(fileData,pos,2)
 		data.chars[char] = {}

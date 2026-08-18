@@ -54,6 +54,8 @@ function readText(fileData,head)
 			data.langs[v][vv] = text
 			skip(textLength+2)
 		end
+
 	end
+
 	return data
 end

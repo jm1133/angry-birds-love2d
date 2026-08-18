@@ -29,5 +29,6 @@ function readSprt(fileData)
 
 		-- print(pos,#fileData)
 	end
+
 	return data
 end

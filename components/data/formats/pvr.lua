@@ -69,6 +69,7 @@ function convertImagePVR(data, filename)
 				-- imagedata = resultdat
 				-- print(w, h)
 			end
+
 		elseif format == 54 and support.ETC1 then --etc1 compressed, 4bpp
 			-- local expectedSize = w * h / 2 + 52
 			-- assert(data:len() == expectedSize, "wrong pvr size for \""..filename.."\"; expected "..expectedSize.." ("..metadatasize.."), got "..data:len())
@@ -96,6 +97,7 @@ function convertImagePVR(data, filename)
 		-- else
 		-- 	error("convertImagePVR: unsupported pvr2 pixel format for \""..filename.."\": "..tostring(format))
 		end
+
 	elseif love.data.unpack(">i4", data, 1) == 0x50565203 then --pvr v3 header, nearly everything in 4.0.0
 		skip(4) --PVR
 		skip(4) --flags
@@ -153,6 +155,7 @@ function convertImagePVR(data, filename)
 		-- else
 		-- 	error("convertImagePVR: unsupported pvr3 pixel format for \""..filename.."\": "..tostring(format))
 		end
+
 	else
 		print("convertImagePVR: unsupported pvr header format for \""..filename.."\"")
 	end
@@ -196,6 +199,7 @@ local function getColorA(colorData)
 	local color = {}
 
 	-- Opaque Color Mode - RGB 554
+
 	if (bit.band(colorData, 0x8000) ~= 0) then
 		color.red = bit.arshift(bit.band(colorData, 0x7c00), 10); -- 5->5 bits
 		color.green = bit.arshift(bit.band(colorData, 0x3e0), 5); -- 5->5 bits
@@ -216,6 +220,7 @@ local function getColorB(colorData)
 	local color = {}
 
 	-- Opaque Color Mode - RGB 555
+
 	if (bit.band(colorData, 0x80000000) ~= 0) then
 		color.red = bit.arshift(bit.band(colorData, 0x7c000000), 26); -- 5->5 bits
 		color.green = bit.arshift(bit.band(colorData, 0x3e00000), 21); -- 5->5 bits
@@ -265,6 +270,7 @@ local function interpolateColors(P, Q, R, S, pPixel, bpp)
 
 	if (bpp == 2) then
 		-- Loop through pixels to achieve results.
+
 		for x = 0, wordWidth - 1 do
 			-- Pixel128S result = { 4 * hP.red, 4 * hP.green, 4 * hP.blue, 4 * hP.alpha };
 			-- Pixel128S dY = { hR.red - hP.red, hR.green - hP.green, hR.blue - hP.blue, hR.alpha - hP.alpha };
@@ -293,8 +299,10 @@ local function interpolateColors(P, Q, R, S, pPixel, bpp)
 			hR.blue = hR.blue + SminusR.blue;
 			hR.alpha = hR.alpha + SminusR.alpha;
 		end
+
 	else
 		-- Loop through pixels to achieve results.
+
 		for x = 0, wordWidth - 1 do
 			-- Pixel128S result = { 4 * hP.red, 4 * hP.green, 4 * hP.blue, 4 * hP.alpha };
 			-- Pixel128S dY = { hR.red - hP.red, hR.green - hP.green, hR.blue - hP.blue, hR.alpha - hP.alpha };
@@ -323,7 +331,9 @@ local function interpolateColors(P, Q, R, S, pPixel, bpp)
 			hR.blue = hR.blue + SminusR.blue;
 			hR.alpha = hR.alpha + SminusR.alpha;
 		end
+
 	end
+
 end
 
 local function unpackModulations(word, offsetX, offsetY, modulationValues, modulationModes, bpp)
@@ -331,16 +341,20 @@ local function unpackModulations(word, offsetX, offsetY, modulationValues, modul
 	local ModulationBits = word.modulationData;
 
 	-- Unpack differently depending on 2bpp or 4bpp modes.
+
 	if (bpp == 2) then
+
 		if (WordModMode ~= 0) then
 			-- determine which of the three modes are in use:
 
 			-- If this is the either the H-only or V-only interpolation mode...
+
 			if (bit.band(ModulationBits, 0x1) ~= 0) then
 				-- look at the "LSB" for the "centre" (V=2,H=4) texel. Its LSB is now
 				-- actually used to indicate whether it's the H-only mode or the V-only...
 
 				-- The centre texel data is the at (y==2, x==4) and so its LSB is at bit 20.
+
 				if (bit.band(ModulationBits, bit.lshift(0x1, 20)) ~= 0) then
 					-- This is the V-only mode
 					WordModMode = 3;
@@ -351,6 +365,7 @@ local function unpackModulations(word, offsetX, offsetY, modulationValues, modul
 
 				-- Create an extra bit for the centre pixel so that it looks like
 				-- we have 2 actual bits for this texel. It makes later coding much easier.
+
 				if (bit.band(ModulationBits, bit.lshift(0x1, 21)) ~= 0) then
 					-- set it to produce code for 1.0
 					ModulationBits = bit.bor(ModulationBits, bit.lshift(0x1, 20))
@@ -358,6 +373,7 @@ local function unpackModulations(word, offsetX, offsetY, modulationValues, modul
 					-- clear it to produce 0.0 code
 					ModulationBits = bit.band(ModulationBits, bit.bnot(bit.lshift(0x1, 20)))
 				end
+
 			end -- end if H-Only or V-Only interpolation mode was chosen
 
 			if (bit.band(ModulationBits, 0x2) ~= 0) then ModulationBits = bit.bor(ModulationBits, 0x1) --set it
@@ -367,20 +383,28 @@ local function unpackModulations(word, offsetX, offsetY, modulationValues, modul
 
 			-- run through all the pixels in the block. Note we can now treat all the
 			-- "stored" values as if they have 2bits (even when they didn't!)
+
 			for y = 0, 4 - 1 do
+
 				for x = 0, 8 - 1 do
 					modulationModes[x + offsetX][y + offsetY] = WordModMode;
 
 					-- if this is a stored value...
+
 					if (bit.band((x ^ y), 1) == 0) then
 						modulationValues[x + offsetX][y + offsetY] = bit.band(ModulationBits, 3);
 						ModulationBits = bit.rshift(ModulationBits, 2)
 					end
+
 				end
+
 			end -- end for y
+
 		-- else if direct encoded 2bit mode - i.e. 1 mode bit per pixel
 		else
+
 			for y = 0, 4 - 1 do
+
 				for x = 0, 8 - 1 do
 					modulationModes[x + offsetX][y + offsetY] = WordModMode;
 
@@ -391,19 +415,27 @@ local function unpackModulations(word, offsetX, offsetY, modulationValues, modul
 					else
 						modulationValues[x + offsetX][y + offsetY] = 0x0;
 					end
+
 					ModulationBits = bit.rshift(ModulationBits, 1)
 				end
+
 			end -- end for y
+
 		end
+
 	else
 		-- Much simpler than the 2bpp decompression, only two modes, so the n/8 values are set directly.
 		-- run through all the pixels in the word.
+
 		if (WordModMode ~= 0) then
+
 			for y = 0, 4 - 1 do
+
 				for x = 0, 4 - 1 do
 					-- print("mod "..(y + offsetY))
 					modulationValues[y + offsetY][x + offsetX] = bit.band(ModulationBits, 3);
 					-- if (modulationValues==0) {}. We don't need to check 0, 0 = 0/8.
+
 					if (modulationValues[y + offsetY][x + offsetX] == 1) then
 						modulationValues[y + offsetY][x + offsetX] = 4
 					elseif (modulationValues[y + offsetY][x + offsetX] == 2) then
@@ -411,24 +443,35 @@ local function unpackModulations(word, offsetX, offsetY, modulationValues, modul
 					elseif (modulationValues[y + offsetY][x + offsetX] == 3) then
 						modulationValues[y + offsetY][x + offsetX] = 8
 					end
+
 					ModulationBits = bit.rshift(ModulationBits, 2)
 				end -- end for x
+
 			end -- end for y
+
 		else
+
 			for y = 0, 4 - 1 do
+
 				for x = 0, 4 - 1 do
 					modulationValues[y + offsetY][x + offsetX] = bit.band(ModulationBits, 3);
 					modulationValues[y + offsetY][x + offsetX] = modulationValues[y + offsetY][x + offsetX] * 3;
+
 					if (modulationValues[y + offsetY][x + offsetX] > 3) then
 						modulationValues[y + offsetY][x + offsetX] = modulationValues[y + offsetY][x + offsetX] - 1 end
 					ModulationBits = bit.rshift(ModulationBits, 2)
 				end -- end for x
+
 			end -- end for y
+
 		end
+
 	end
+
 end
 
 local function getModulationValues(modulationValues, modulationModes, xPos, yPos, bpp)
+
 	if (bpp == 2) then
 		local RepVals0 = { 0, 3, 5, 8 };
 
@@ -451,7 +494,9 @@ local function getModulationValues(modulationValues, modulationModes, xPos, yPos
 			else
 				return (RepVals0[modulationValues[xPos][yPos - 1]] + RepVals0[modulationValues[xPos][yPos + 1]] + 1) / 2;
 			end
+
 		end
+
 	elseif (bpp == 4) then
 		return modulationValues[xPos][yPos];
 	end
@@ -487,9 +532,11 @@ local function pvrtcGetDecompressedPixels(P, Q, R, S, pColorData, bpp)
 	interpolateColors(getColorB(P.colorData), getColorB(Q.colorData), getColorB(R.colorData), getColorB(S.colorData), upscaledColorB, bpp);
 
 	for y = 0, wordHeight - 1 do
+
 		for x = 0, wordWidth - 1 do
 			local mod = getModulationValues(modulationValues, modulationModes, x + wordWidth / 2, y + wordHeight / 2, bpp)
 			local punchthroughAlpha = false;
+
 			if (mod > 10) then
 				punchthroughAlpha = true;
 				mod = mod - 10;
@@ -505,6 +552,7 @@ local function pvrtcGetDecompressedPixels(P, Q, R, S, pColorData, bpp)
 			end
 
 			-- Convert the 32bit precision Result to 8 bit per channel color.
+
 			if (bpp == 2) then
 				pColorData[y * wordWidth + x].red = (result.red);
 				pColorData[y * wordWidth + x].green = (result.green);
@@ -517,8 +565,11 @@ local function pvrtcGetDecompressedPixels(P, Q, R, S, pColorData, bpp)
 				pColorData[y + x * wordHeight].blue = (result.blue);
 				pColorData[y + x * wordHeight].alpha = (result.alpha);
 			end
+
 		end
+
 	end
+
 end
 
 local function wrapWordIndex(numWords, word) return ((word + numWords) % numWords); end
@@ -548,12 +599,14 @@ local function TwiddleUV(XSize, YSize, XPos, YPos)
 	assert(isPowerOf2(XSize));
 
 	-- If Y is the larger dimension - switch the min/max values.
+
 	if (YSize < XSize) then
 		MinDimension = YSize;
 		MaxValue = XPos;
 	end
 
 	-- Step through all the bits in the "minimum" dimension
+
 	while (SrcBitPos < MinDimension) do
 		if bit.band(YPos, SrcBitPos) ~= 0 then Twiddled = bit.bor(Twiddled, DstBitPos); end
 
@@ -577,6 +630,7 @@ local function mapDecompressedData(pOutput, width, pWord, words, bpp)
 	if (bpp == 2) then wordWidth = 8; end
 
 	for y = 0, wordHeight / 2 - 1 do
+
 		for x = 0, wordWidth / 2 - 1 do
 			local py = ((words.P[1] * wordHeight) + y + wordHeight / 2)
 			local px = words.P[0] * wordWidth + x + wordWidth / 2
@@ -598,13 +652,17 @@ local function mapDecompressedData(pOutput, width, pWord, words, bpp)
 			local src = pWord[(y + wordHeight / 2) * wordWidth + x + wordWidth / 2]
 			pOutput[py * width + px] = {red = src.red, green = src.green, blue = src.blue, alpha = src.alpha}; -- map S
 		end
+
 	end
+
 end
 
 --read 32-bit (4 byte) UNsigned int LITTLE-endian
+
 local function read32Int(data, index)
 	return love.data.unpack("<I4", data, index * 4 + 1)
 end
+
 local function pvrtcDecompress(pCompressedData, pDecompressedData, width, height, bpp)
 	local wordWidth = 4;
 	local wordHeight = 4;
@@ -624,8 +682,10 @@ local function pvrtcDecompress(pCompressedData, pDecompressedData, width, height
 	for i = 0, wordWidth * wordHeight - 1 do pPixels[i] = {} end
 
 	-- For each row of words
+
 	for wordY = -1, i32NumYWords - 1 - 1 do
 		-- for each column of words
+
 		for wordX = -1, i32NumXWords - 1 - 1 do
 			indices.P[0] = (wrapWordIndex(i32NumXWords, wordX));
 			indices.P[1] = (wrapWordIndex(i32NumYWords, wordY));
@@ -670,6 +730,7 @@ local function pvrtcDecompress(pCompressedData, pDecompressedData, width, height
 			mapDecompressedData(pOutData, width, pPixels, indices, bpp);
 
 		end -- for each word
+
 	end -- for each row of words
 
 	-- Return the data size
@@ -695,15 +756,19 @@ function PVRTDecompressPVRTC(pCompressedData, Do2bitMode, XDim, YDim, pResultIma
 	local resultstr = ""
 
 	-- If the dimensions were too small, then copy the new buffer back into the output buffer.
+
 	if (XTrueDim ~= XDim or YTrueDim ~= YDim) then
 		-- Loop through all the required pixels.
+
 		for x = 0, XDim - 1 do
 			-- for y = 0, YDim - 1 do pResultImage[x + y * XDim] = pDecompressedData[x + y * XTrueDim]; end
+
 			for y = 0, YDim - 1 do
 				local pixel = pDecompressedData[x + y * XTrueDim]
 				pResultImage[x + y * XDim] = pixel
 				resultstr = resultstr..string.char(pixel.red)..string.char(pixel.green)..string.char(pixel.blue)..string.char(pixel.alpha)
 			end
+
 		end
 		
 		error()
@@ -711,8 +776,10 @@ function PVRTDecompressPVRTC(pCompressedData, Do2bitMode, XDim, YDim, pResultIma
 		-- delete[] pDecompressedData;
 	else
 		local dat = love.image.newImageData(XDim, YDim, "rgba8", nil)
+
 		for x = 0, XDim - 1 do
 			-- for y = 0, YDim - 1 do pResultImage[x + y * XDim] = pDecompressedData[x + y * XTrueDim]; end
+
 			for y = 0, YDim - 1 do
 				local pixel = pDecompressedData[x + y * XTrueDim]
 				--resultstr = resultstr..string.char(pixel.red)..string.char(pixel.green)..string.char(pixel.blue)..string.char(pixel.alpha)
@@ -720,11 +787,14 @@ function PVRTDecompressPVRTC(pCompressedData, Do2bitMode, XDim, YDim, pResultIma
 				--dat:setPixel(x, y, x / XDim, y / YDim, 0, 1)
 				--print(pixel.red / 255, pixel.green / 255, pixel.blue / 255, pixel.alpha / 255)
 			end
+
 			--print("row(column?) "..x)
 			--error()
 		end
+
 		return retval, dat
 	end
+
 	return retval, resultstr
 end
 

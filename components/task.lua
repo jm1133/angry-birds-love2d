@@ -21,9 +21,11 @@ function task.spawn(func)
 			time = waitTime or 0,
 		})
 	end
+
 end
 
 local function update(dt)
+
 	for i = #waiting, 1, -1 do
 		local t = waiting[i]
 
@@ -41,8 +43,11 @@ local function update(dt)
 			else
 				t.time = waitTime or 0
 			end
+
 		end
+
 	end
+
 end
 
 -- Automatically hook into Love2D
@@ -54,4 +59,5 @@ function love.update(dt)
 	if oldLoveUpdate then
 		oldLoveUpdate(dt)
 	end
+
 end
