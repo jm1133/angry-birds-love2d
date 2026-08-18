@@ -3,6 +3,11 @@
 local drawSprites --old seasons versions define drawSprites
 local trajectory
 
+local motionBlurEnabled = true
+local motionBlurSamples = 6
+local motionBlurStrength = 0.25
+local motionBlurDistance = 0.05
+
 themeSpriteObjects = {}
 --[[
 
@@ -477,6 +482,7 @@ end
 
 ]]
 
+--[[
 function drawObject(v)
 
 	if v.visible == false then
@@ -522,6 +528,143 @@ function drawObject(v)
 
 		res.drawSprite(v.objectSprite, x / scale, y / scale)
 	end
+
+	drawangle = 0
+end
+]]--
+
+function drawObject(v)
+
+	if v.visible == false then
+		return
+	end
+
+	local x, y
+
+	if v.position then
+		x, y = v.position.x, v.position.y
+	else
+		x, y = physicsToWorldTransform(v.x or 0, v.y or 0)
+	end
+
+	drawxp, drawyp = res.getSpritePivot(v.objectSprite)
+	drawangle = v.angle
+
+	if v.colors then
+		love.graphics.setColor(v.colors)
+	else
+		love.graphics.setColor(1, 1, 1, 1)
+	end
+
+	if v.shader then
+		love.graphics.setShader(v.shader)
+	end
+
+	local scale = v.scale or 1
+
+	-- Motion blur for the currently flying bird
+	if motionBlurEnabled
+		and flyingBird
+		and v.name == flyingBird.name
+		and flyingBird.body
+		and not flyingBird.isDestroyed
+	then
+
+		local vx, vy = flyingBird.body:getLinearVelocity()
+
+		-- Convert physics velocity to world/render velocity
+		vx = vx * physicsToWorld
+		vy = vy * physicsToWorld
+		local oldBlend1, oldBlend2 = love.graphics.getBlendMode()
+		love.graphics.setBlendMode("alpha", "alphamultiply")
+
+		for i = motionBlurSamples, 1, -1 do
+
+			local t = i / motionBlurSamples
+
+			local blurX = x - vx * motionBlurDistance * t
+			local blurY = y - vy * motionBlurDistance * t
+
+			love.graphics.push()
+
+			-- Older samples are more transparent
+			local alpha = motionBlurStrength * (1 - t)
+
+			love.graphics.setColor(1, 1, 1, alpha)
+
+			if type(scale) == "table" then
+
+				love.graphics.scale(scale.x, scale.y)
+
+				res.drawSprite(
+					v.objectSprite,
+					blurX / scale.x,
+					blurY / scale.y
+				)
+
+			else
+
+				if v.isBackground then
+					scale = 2
+				end
+
+				love.graphics.scale(scale)
+
+				if v.flipx then
+					love.graphics.scale(-1, 1)
+				end
+
+				res.drawSprite(
+					v.objectSprite,
+					blurX / scale,
+					blurY / scale
+				)
+
+			end
+
+			love.graphics.pop()
+		end
+
+		love.graphics.setBlendMode(oldBlend1, oldBlend2)
+		love.graphics.setColor(1, 1, 1, 1)
+	end
+
+	-- Normal object
+	love.graphics.push()
+
+	if type(scale) == "table" then
+
+		love.graphics.scale(scale.x, scale.y)
+
+		res.drawSprite(
+			v.objectSprite,
+			x / scale.x,
+			y / scale.y
+		)
+
+	else
+
+		if v.isBackground then
+			scale = 2
+		end
+
+		love.graphics.scale(scale)
+
+		if v.flipx then
+			love.graphics.scale(-1, 1)
+		end
+
+		res.drawSprite(
+			v.objectSprite,
+			x / scale,
+			y / scale
+		)
+
+	end
+
+	love.graphics.pop()
+
+	love.graphics.setShader()
 
 	drawangle = 0
 end
