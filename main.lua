@@ -246,6 +246,10 @@ function loadGameFiles()
 end
 
 function love.load()
+	if love._os == "Android" then
+        love.filesystem._setAndroidSaveExternal(true)
+    end
+
 	--love.filesystem.exists should no longer be deprecated in 12
 	if love.setDeprecationOutput then
 		love.setDeprecationOutput(false)

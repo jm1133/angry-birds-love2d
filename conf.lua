@@ -1,24 +1,21 @@
 function love.conf(t)
 	t.modules.math = false
-	t.modules.video = false
+	t.modules.video = true
 	t.modules.joystick = true
-
 	t.window.title = "Loading..."
-
 	t.window.width = 1024--864
 	t.window.height = 600--480
 	t.window.minwidth = 2
 	t.window.minheight = 2
 	-- t.window.minwidth = 480--864
 	-- t.window.minheight = 320--480
-	t.window.resizable = true
-
 	t.window.usedpiscale = true
 	t.accelerometerjoystick = false
-	-- love.window.fullscreen = true
 	t.window.msaa = 8
 	t.window.vsync = 0
-
+	t.window.borderless = false         -- Remove all border visuals from the window (boolean)
+    t.window.resizable = true   
+	t.window.fullscreentype = "desktop"
 	--love2d with vulkan on most platforms doesn't support many image formats like etc1
 	if t.graphics then
 		t.graphics.excluderenderers = {"vulkan"}

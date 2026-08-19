@@ -183,7 +183,10 @@ function drawSprite(sheet, sprite, x, y, vanchor, hanchor, width, height, angle)
 		love.graphics.translate(-xpr, -ypr)
 		love.graphics.translate(ox, oy)
 		local drawingAngle = angle or drawangle
-		love.graphics.rotate(drawingAngle)
+
+		if type(drawingAngle) == "number" then
+			love.graphics.rotate(drawingAngle)
+		end
 		
 		love.graphics.translate(-ox, -oy)
 		love.graphics.scale(wm, hm)
