@@ -4,8 +4,6 @@ An accurate **work-in-progress** port of Angry Birds' proprietary engine to **LÃ
 
 This project is **not** a decompilation or an official game release. Instead, it is a reimplementation of the original Angry Birds engine.
 
-By default, the engine is bundled with **Angry Birds Classic 1.6.3.1 (PC)**, although many other versions of Angry Birds Classic, Angry Birds Seasons, and their platform variants are supported.
-
 ---
 
 # Downloading the Engine
